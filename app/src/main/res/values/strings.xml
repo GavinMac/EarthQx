@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">EarthQx</string>
+    <string name="welcome">Welcome To EarthQx</string>
+    <string name="getDataBtn">Refresh</string>
+    <string name="copyrightCredit">Contains British Geological Survey materials ©NERC 2019</string>
+    <string name="displayText">Raw Data is Displayed here</string>
+    <string name="google_maps_key">AIzaSyBwC0zf9ZKgW_FoC1vE4qMZ4J4gGOELIzo</string>
+    <string name="title_activity_date_picker">DatePickerActivity</string>
+    <string name="dateTextVew_default">Enter Date</string>
+</resources>
