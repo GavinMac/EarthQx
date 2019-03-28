@@ -6,5 +6,8 @@
     <string name="displayText">Raw Data is Displayed here</string>
     <string name="google_maps_key">AIzaSyBwC0zf9ZKgW_FoC1vE4qMZ4J4gGOELIzo</string>
     <string name="title_activity_date_picker">DatePickerActivity</string>
-    <string name="dateTextVew_default">Enter Date</string>
+    <string name="dateEditText">Enter Date</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

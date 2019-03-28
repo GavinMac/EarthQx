@@ -26,14 +26,6 @@
             android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp">
 
-            <!--<Spinner-->
-                <!--android:id="@+id/dropDownSpinner"-->
-                <!--android:layout_width="100dp"-->
-                <!--android:layout_height="75dp"-->
-                <!--android:background="@android:drawable/btn_dropdown"-->
-                <!--android:spinnerMode="dropdown"-->
-                <!--android:layout_centerVertical="true"/>-->
-
             <TextView
                 android:id="@+id/dateTextView"
                 android:layout_width="wrap_content"
@@ -42,10 +34,9 @@
                 android:focusable="true"
                 android:clickable="true"
                 android:layout_centerVertical="true"
-                android:text="@string/dateTextVew_default"
+                android:text="@string/dateEditText"
                 android:textAlignment="center"
-                android:textSize="28sp"
-                style="@android:style/Widget.Button"/>
+                android:textSize="28sp" />
 
             <Button
                 android:id="@+id/refreshButton"
@@ -58,40 +49,35 @@
         </RelativeLayout>
 
 
-
-        <!--<TextView android:id="@+id/rawDataDisplay"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textSize="20sp"-->
-        <!--android:text="@string/displayText"/>-->
-
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:map="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
             tools:context=".MapsActivity" />
 
-        <!--<ListView-->
-        <!--android:id="@+id/listViewDisplay"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="612dp"-->
-        <!--android:paddingTop="10dp"-->
-        <!--android:paddingBottom="10dp"-->
-        <!--tools:layout_editor_absoluteX="8dp"-->
-        <!--tools:layout_editor_absoluteY="170dp" />-->
+        <ListView
+            android:id="@+id/listViewDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="170dp" />
 
-        <TextView
-            android:id="@+id/acknowledgement"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:text="@string/copyrightCredit"
-            android:textAlignment="center"
-            android:textSize="14sp"
-            android:layout_alignBottom="@id/map"/>
+        <!--<TextView-->
+            <!--android:id="@+id/acknowledgement"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:paddingTop="5dp"-->
+            <!--android:text="@string/copyrightCredit"-->
+            <!--android:textAlignment="center"-->
+            <!--android:textSize="14sp"-->
+            <!--android:layout_alignBottom="@id/map"/>-->
 
     </LinearLayout>
 

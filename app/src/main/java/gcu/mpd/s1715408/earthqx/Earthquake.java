@@ -1,5 +1,14 @@
 package gcu.mpd.s1715408.earthqx;
 
+import android.util.Log;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Locale;
+
 public class Earthquake {
 
     private String title;
@@ -9,6 +18,7 @@ public class Earthquake {
     private String category;
     private String geoLat;
     private String geoLong;
+    public LocalDate earthquakeDate;
 
     public String getTitle() {
         return title;
@@ -61,6 +71,28 @@ public class Earthquake {
     public void setGeoLong(String geoLong) {
         this.geoLong = geoLong;
     }
+
+
+
+    public LocalDate getEarthquakeDate(){
+
+        String rawData = pubDate;
+        //Log.d("rawData", rawData);
+        Date rawDataAsDate = new Date();
+
+        try{
+            rawDataAsDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.UK).parse(rawData);
+        }
+        catch(ParseException e){
+            Log.e("Date Converting Error", "Can't convert string date to earthquake returnDate");
+        }
+
+        LocalDate returnDate = rawDataAsDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        //Log.d("returnDate",": " + returnDate);
+        return returnDate;
+    }
+
+    public void setEarthquakeDate(LocalDate earthquakeDate){this.earthquakeDate = earthquakeDate;}
 
 
     @Override

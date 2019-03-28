@@ -6,26 +6,30 @@
 
 package gcu.mpd.s1715408.earthqx;
 
+import android.app.DatePickerDialog;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.DatePicker;
-import android.app.DatePickerDialog;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Calendar;
+import java.util.Locale;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,34 +38,34 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback//implements OnClickListener
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener
 {
     private TextView dateTextView;
-    //private ListView listViewDisplay;
-    //private Spinner staticSpinner = (Spinner) findViewById(R.id.dropDownSpinner);
+    private ListView listViewDisplay;
     private Button refreshButton;
-    private String url1="";
     private String urlSource="http://quakes.bgs.ac.uk/feeds/MhSeismology.xml";
     private GoogleMap mMap;
+    private LocalDate currentDateSelection;
+    MainEarthquakeList mainEarthquakeList = new MainEarthquakeList();
 
-    private int mDay, mMonth, mYear;
-
-    List<Earthquake> dateFilteredList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         // Set up the raw links to the graphical components
+
         dateTextView = findViewById(R.id.dateTextView);
         dateTextView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                setDateSelection();
+                DialogFragment datePicker = new DatePickerFragment();
+                datePicker.show(getSupportFragmentManager(), "date picker");
             }
         });
-        //listViewDisplay = (ListView)findViewById(R.id.listViewDisplay);
+        listViewDisplay = findViewById(R.id.listViewDisplay);
         refreshButton = findViewById(R.id.refreshButton);
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,10 +76,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
     }
 
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
+        String stringDate = (dayOfMonth + "/" + (month + 1) + "/" + year);
+        dateTextView.setText(stringDate);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/M/yyy");
+        currentDateSelection = LocalDate.parse(stringDate,dtf);
+        Log.d("currentDateSelection", ""+currentDateSelection);
+    }
 
     //Use onMapReady to run the other functions to load markers
     @Override
@@ -88,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         // Run network access on a separate thread;
         new Thread(new Task(urlSource)).start();
+        //DownloadData downloader = new DownloadData();
+        //new Thread(downloader).start();
     }
 
     // Need separate thread to access the internet resource over network
@@ -116,11 +133,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 yc = aurl.openConnection();
 
                 XMLPullParserHandler parser = new XMLPullParserHandler();
-                MainEarthquakeList mainEarthquakeList = new MainEarthquakeList();
+
                 allEarthquakes = parser.parse(yc.getInputStream());
                 mainEarthquakeList.setMainEarthquakeList(allEarthquakes);
-
-                //Log.d("earthquakes: ",allEarthquakes.toString());
 
             }
             catch (IOException ae)
@@ -136,8 +151,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 @Override
                 public void run() {
                     Log.d("UI thread", "I am the UI thread");
-                    //rawDataDisplay.setText(result);
-                    //listViewDisplay.setAdapter(adapter);
+                    listViewDisplay.setAdapter(adapter);
 
                     //set camera to UK
                     LatLng ukLatLng = new LatLng(55.378, 3.436);
@@ -149,8 +163,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         LatLng currentLatLng = new LatLng(latDouble,longDouble);
                         mMap.addMarker(new MarkerOptions().position(currentLatLng).title(e.getTitle()));
                     }
-
-
                 }
             });
 
@@ -159,41 +171,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    public void applyDateFilter(){
-                if(allEarthquakes != null){
-                    for(Earthquake e : allEarthquakes){
+//    public void applyDateFilter(){
+//        List<Earthquake> earthquakeList = mainEarthquakeList.getMainEarthquakeList();
+//        List<Earthquake> dateFilteredList = mainEarthquakeList.getDateFilteredList();
+//
+//                if( earthquakeList != null){
+//                    for(Earthquake e : earthquakeList){
+//
+//                        //Get a string date from the earthquake object
+//                        LocalDate eDate = e.getEarthquakeDate();
+//
+//                        Log.d("currentLocalDateSelect","" + currentDateSelection);
+//                        Log.d("eDate", ""+eDate);
+//
+//                        if (eDate == currentDateSelection){
+//                            dateFilteredList.add(e);
+//                        }
+//                    }
+//                }
+//    }
 
-                        //Get a string date from the earthquake object
-                        LocalDate eDate = getEarthquakeDate(e);
-                        LocalDate currentLocalDateSelection = currentDateSelection.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-                        Log.d("currentLocalDateSelection",""+currentLocalDateSelection);
-                        Log.d("eDate", ""+eDate);
-
-                        if (eDate == currentLocalDateSelection){
-                            dateFilteredList.add(e);
-                        }
-                    }
-                }
-    }
-
-    public LocalDate getEarthquakeDate(Earthquake eq){
-
-        String rawData = eq.getPubDate();
-        //Log.d("rawData", rawData);
-        Date rawDataAsDate = new Date();
-
-        try{
-            rawDataAsDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss").parse(rawData);
-        }
-        catch(ParseException e){
-            Log.e("Date Converting Error", "Can't convert string date to earthquake returnDate");
-        }
-
-        LocalDate returnDate = rawDataAsDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        //Log.d("returnDate",": " + returnDate);
-        return returnDate;
-    }
 
 
 }
