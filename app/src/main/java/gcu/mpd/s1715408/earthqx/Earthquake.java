@@ -13,6 +13,10 @@ public class Earthquake {
 
     private String title;
     private String description;
+    private String location;
+    private String originDate;
+    private String magnitude;
+    private String depth;
     private String link;
     private String pubDate;
     private String category;
@@ -34,6 +38,38 @@ public class Earthquake {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getOriginDate() {
+        return originDate;
+    }
+
+    public void setOriginDate(String originDate) {
+        this.originDate = originDate;
+    }
+
+    public String getMagnitude() {
+        return magnitude;
+    }
+
+    public void setMagnitude(String magnitude) {
+        this.magnitude = magnitude;
+    }
+
+    public String getDepth() {
+        return depth;
+    }
+
+    public void setDepth(String depth) {
+        this.depth = depth;
     }
 
     public String getLink() {
@@ -97,7 +133,18 @@ public class Earthquake {
 
     @Override
     public String toString(){
-        return title + "\n" + description + "\n" + link + "\n" + pubDate + "\n" + category + "\n" + geoLat + "\n" + geoLong;
+        return location
+                + "\n" + "Magnitude: " + magnitude
+                +"\n" + "Depth: " + depth
+                + "\n" + "Published: " + pubDate
+                +"\n" + "Origin date: " + originDate
+                + "\n" + "Category: " + category
+                + "\n" + "Lat/Lon" + geoLat + ", " + geoLong
+                +"\n";
+    }
+
+    public String minimalInfo(){
+        return location + " - " + magnitude;
     }
 
 }

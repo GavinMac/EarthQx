@@ -41,7 +41,7 @@ public class XMLPullParserHandler {
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 String tagname = parser.getName();
                 String parentTag = "channel";
-                Log.d("parser: ", "val: " + tagname);
+                //Log.d("parser: ", "val: " + tagname);
 
                 switch (eventType) {
                     case XmlPullParser.START_TAG:
@@ -68,6 +68,11 @@ public class XMLPullParserHandler {
                                 currentEarthquake.setTitle(text);
                             } else if (tagname.equalsIgnoreCase("description")) {
                                 currentEarthquake.setDescription(text);
+                                String[] stringSplit = text.split(";");
+                                currentEarthquake.setOriginDate(stringSplit[0]);
+                                currentEarthquake.setLocation(stringSplit[1]);
+                                currentEarthquake.setDepth(stringSplit[3]);
+                                currentEarthquake.setMagnitude(stringSplit[4]);
                             } else if (tagname.equalsIgnoreCase("link")) {
                                 currentEarthquake.setLink(text);
                             } else if (tagname.equalsIgnoreCase("pubDate")) {

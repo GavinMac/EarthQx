@@ -9,14 +9,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Timer;
 
-class DownloadData implements Runnable {
+class DataDownloader implements Runnable {
+
+    DatabaseHelper mDatabaseHelper;
 
     private String url = "http://quakes.bgs.ac.uk/feeds/MhSeismology.xml";
     public MainEarthquakeList mainEarthquakeList;
-    GoogleMap googleMap;
 
-    public DownloadData(MainEarthquakeList earthquakeList){this.mainEarthquakeList = earthquakeList;}
+    public DataDownloader(MainEarthquakeList earthquakeList){this.mainEarthquakeList = earthquakeList;}
 
     @Override
     public void run() {
@@ -41,5 +43,12 @@ class DownloadData implements Runnable {
             ae.printStackTrace();
         }
     }
+
+//    //For database
+//    public void AddDataToDb(List<Earthquake> eList){
+//        for(Earthquake e : eList){
+//            boolean insertData = mDatabaseHelper.addData(e);
+//        }
+//    }
 
 }

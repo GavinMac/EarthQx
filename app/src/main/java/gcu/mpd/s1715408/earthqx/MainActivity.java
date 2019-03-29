@@ -7,6 +7,7 @@
 package gcu.mpd.s1715408.earthqx;
 
 import android.app.DatePickerDialog;
+import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.URL;
@@ -40,6 +42,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener
 {
+    DatabaseHelper mDatabaseHelper;
+
     private TextView dateTextView;
     private ListView listViewDisplay;
     private Button refreshButton;
@@ -48,15 +52,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocalDate currentDateSelection;
     MainEarthquakeList mainEarthquakeList = new MainEarthquakeList();
 
+    private Handler mainHandler = new Handler();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mDatabaseHelper = new DatabaseHelper(this);
 
         // Set up the raw links to the graphical components
-
         dateTextView = findViewById(R.id.dateTextView);
         dateTextView.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -144,14 +150,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 ae.printStackTrace();
             }
 
-            final ArrayAdapter<Earthquake> adapter = new ArrayAdapter<Earthquake>(MainActivity.this, R.layout.list_item, allEarthquakes);
+            //final ArrayAdapter<Earthquake> adapter = new ArrayAdapter<Earthquake>(MainActivity.this, R.layout.list_item, allEarthquakes);
+            final EarthquakeListAdapter listAdapter = new EarthquakeListAdapter(MainActivity.this, R.layout.list_item, allEarthquakes);
 
             MainActivity.this.runOnUiThread(new Runnable()
             {
                 @Override
                 public void run() {
                     Log.d("UI thread", "I am the UI thread");
-                    listViewDisplay.setAdapter(adapter);
+                    listViewDisplay.setAdapter(listAdapter);
+                    Log.e("adapter: ", "count: " + listAdapter.getCount());
 
                     //set camera to UK
                     LatLng ukLatLng = new LatLng(55.378, 3.436);
@@ -161,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         double latDouble = Double.parseDouble(e.getGeoLat());
                         double longDouble = Double.parseDouble(e.getGeoLong());
                         LatLng currentLatLng = new LatLng(latDouble,longDouble);
-                        mMap.addMarker(new MarkerOptions().position(currentLatLng).title(e.getTitle()));
+                        mMap.addMarker(new MarkerOptions().position(currentLatLng).title(e.minimalInfo()));
                     }
                 }
             });
@@ -191,6 +199,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //                }
 //    }
 
-
+    private void toastMessage(String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
 
 }
