@@ -108,9 +108,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void loadData(GoogleMap gMap)
     {
         // Run network access on a separate thread;
-        new Thread(new Task(urlSource)).start();
-        //DownloadData downloader = new DownloadData();
-        //new Thread(downloader).start();
+        //new Thread(new Task(urlSource)).start();
+        DataDownloader dataDownloader = new DataDownloader();
+        new Thread(dataDownloader).start();
     }
 
     // Need separate thread to access the internet resource over network
@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 allEarthquakes = parser.parse(yc.getInputStream());
                 mainEarthquakeList.setMainEarthquakeList(allEarthquakes);
+                Log.e("allEarthquakes", "" + allEarthquakes);
 
             }
             catch (IOException ae)

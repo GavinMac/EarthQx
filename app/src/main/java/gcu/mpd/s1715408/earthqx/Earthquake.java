@@ -134,12 +134,12 @@ public class Earthquake {
     @Override
     public String toString(){
         return location
-                + "\n" + "Magnitude: " + magnitude
-                +"\n" + "Depth: " + depth
-                + "\n" + "Published: " + pubDate
-                +"\n" + "Origin date: " + originDate
-                + "\n" + "Category: " + category
-                + "\n" + "Lat/Lon" + geoLat + ", " + geoLong
+                + "\n" + magnitude
+                +"\n" + depth
+                + "\n" + pubDate
+                +"\n" + originDate
+                + "\n" + category
+                + "\n"+ geoLat + ", " + geoLong
                 +"\n";
     }
 

@@ -13,9 +13,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_NAME = "earthquakes";
     //private static final String ID_COL = "ID";
     private static final String LOC_COL = "location";
-    private static final String PUB_DATE = "publishDate";
+    private static final String PUB_DATE = "pubDate";
     private static final String OR_DATE_COL = "originDate";
-    private static final String LATLON_COL = "LatLong";
+    private static final String LAT_COL = "geoLat";
+    private static final String LONG_COL = "geoLong";
     private static final String DEPTH_COL = "depth";
     private static final String MAG_COL = "magnitude";
     private static final String CAT_COL = "category";
@@ -32,9 +33,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + LOC_COL + " TEXT, "
                 + PUB_DATE + " TEXT, "
                 + OR_DATE_COL + "TEXT, "
-                + LATLON_COL + " TEXT, "
-                + DEPTH_COL + " TEXT, "
-                + MAG_COL + " TEXT, "
+                + LAT_COL + " REAL, "
+                + LONG_COL + "REAL"
+                + DEPTH_COL + " REAL, "
+                + MAG_COL + " REAL, "
                 + CAT_COL + " TEXT, "
                 + LINK_COL + " TEXT);";
 
@@ -47,19 +49,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-//    public boolean addData(String column, Earthquake item){
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(column, item);
-//
-//        long result = db.insert(TABLE_NAME, null, contentValues);
-//
-//        if(result == -1){
-//            return false;
-//        }else {
-//            return true;
-//        }
-//    }
+    public boolean addData(Earthquake e){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(LOC_COL, e.getLocation());
+        contentValues.put(PUB_DATE, e.getPubDate());
+        contentValues.put(OR_DATE_COL, e.getOriginDate());
+        contentValues.put(LAT_COL, Float.parseFloat(e.getGeoLat()));
+        contentValues.put(LONG_COL, Float.parseFloat(e.getLocation()));
+        contentValues.put(DEPTH_COL, Float.parseFloat(e.getDepth()));
+        contentValues.put(MAG_COL, Float.parseFloat(e.getMagnitude()));
+        contentValues.put(CAT_COL, e.getCategory());
+        contentValues.put(LINK_COL, e.getLink());
+
+        long result = db.insert(TABLE_NAME, null, contentValues);
+
+        if(result == -1){
+            return false;
+        }else {
+            return true;
+        }
+    }
 
 
 }

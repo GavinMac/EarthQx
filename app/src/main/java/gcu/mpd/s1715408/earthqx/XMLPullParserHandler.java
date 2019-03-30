@@ -69,10 +69,12 @@ public class XMLPullParserHandler {
                             } else if (tagname.equalsIgnoreCase("description")) {
                                 currentEarthquake.setDescription(text);
                                 String[] stringSplit = text.split(";");
-                                currentEarthquake.setOriginDate(stringSplit[0]);
-                                currentEarthquake.setLocation(stringSplit[1]);
-                                currentEarthquake.setDepth(stringSplit[3]);
-                                currentEarthquake.setMagnitude(stringSplit[4]);
+                                String[]values = SplitColons(stringSplit);
+                                currentEarthquake.setOriginDate(values[0]);
+                                currentEarthquake.setLocation(values[1]);
+                                currentEarthquake.setDepth(values[3]);
+                                currentEarthquake.setMagnitude(values[4]);
+
                             } else if (tagname.equalsIgnoreCase("link")) {
                                 currentEarthquake.setLink(text);
                             } else if (tagname.equalsIgnoreCase("pubDate")) {
@@ -103,4 +105,18 @@ public class XMLPullParserHandler {
 
         return earthquakeList;
     }
+
+    private String[] SplitColons(String[] array){
+
+        //ArrayList<String>returnArray = new ArrayList<String>();
+        String[] returnArray = new String[array.length];
+        String tempString;
+        for(int i = 0; i< array.length; i++){
+            tempString = array[i].replaceAll(".*:", "");
+            returnArray[i] = tempString;
+            Log.e("array["+i+"]", tempString);
+        }
+        return returnArray;
+    }
+
 }

@@ -26,7 +26,7 @@ public class EarthquakeListAdapter extends ArrayAdapter<Earthquake> {
     }
 
     public EarthquakeListAdapter(Context context, int resource, List<Earthquake>objects) {
-        super(context, resource);
+        super(context, resource, objects);
         mContext = context;
         mResource = resource;
     }
@@ -73,10 +73,10 @@ public class EarthquakeListAdapter extends ArrayAdapter<Earthquake> {
             holder.magnitude.setTextColor(Color.parseColor("#FF9800"));
         }
         else if (mag >=1){
-            holder.magnitude.setTextColor(Color.parseColor("FFEB3B"));
+            holder.magnitude.setTextColor(Color.parseColor("#FFEB3B"));
         }
         else if(mag <0){
-            holder.magnitude.setTextColor(Color.WHITE);
+            holder.magnitude.setTextColor(Color.GRAY);
         }
         else{
             holder.magnitude.setTextColor(Color.BLACK);
