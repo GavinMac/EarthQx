@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -47,13 +48,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView dateTextView;
     private ListView listViewDisplay;
     private Button refreshButton;
-    private String urlSource="http://quakes.bgs.ac.uk/feeds/MhSeismology.xml";
     private GoogleMap mMap;
     private LocalDate currentDateSelection;
-    MainEarthquakeList mainEarthquakeList = new MainEarthquakeList();
+    private ArrayList<Earthquake> mainEarthquakeList = new ArrayList<>();
 
     private Handler mainHandler = new Handler();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDatabaseHelper = new DatabaseHelper(this);
-
         // Set up the raw links to the graphical components
         dateTextView = findViewById(R.id.dateTextView);
         dateTextView.setOnClickListener(new View.OnClickListener(){
@@ -96,6 +94,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/M/yyy");
         currentDateSelection = LocalDate.parse(stringDate,dtf);
         Log.d("currentDateSelection", ""+currentDateSelection);
+
+        ArrayList<Earthquake>earthquakes = mainEarthquakeList;
+        ResultsFinder resultsFinder = new ResultsFinder(earthquakes, currentDateSelection);
+        List<Earthquake>resultsList = resultsFinder.ResultsList();
+
+        UIWriter uiWriter = new UIWriter(this, mainHandler,resultsList,mMap, listViewDisplay);
+        uiWriter.run();
+
     }
 
     //Use onMapReady to run the other functions to load markers
@@ -107,77 +113,54 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void loadData(GoogleMap gMap)
     {
-        // Run network access on a separate thread;
-        //new Thread(new Task(urlSource)).start();
-        DataDownloader dataDownloader = new DataDownloader();
+        //Run network access on a separate thread;
+        DataDownloader dataDownloader = new DataDownloader(this, mainHandler, mainEarthquakeList,listViewDisplay, gMap);
         new Thread(dataDownloader).start();
     }
 
     // Need separate thread to access the internet resource over network
     // Other neater solutions should be adopted in later iterations.
-    private class Task implements Runnable
-    {
-        List<Earthquake> allEarthquakes = null;
-        private String url;
-        public Task(String aurl)
-        {
-            url = aurl;
-        }
-
-        @Override
-        public void run()
-        {
-            URL aurl;
-            URLConnection yc;
-
-            //Log.e("MyTag","in run");
-
-            try
-            {
-                //Log.e("MyTag","in try");
-                aurl = new URL(url);
-                yc = aurl.openConnection();
-
-                XMLPullParserHandler parser = new XMLPullParserHandler();
-
-                allEarthquakes = parser.parse(yc.getInputStream());
-                mainEarthquakeList.setMainEarthquakeList(allEarthquakes);
-                Log.e("allEarthquakes", "" + allEarthquakes);
-
-            }
-            catch (IOException ae)
-            {
-                Log.e("MyTag", "ioexception");
-                ae.printStackTrace();
-            }
-
-            //final ArrayAdapter<Earthquake> adapter = new ArrayAdapter<Earthquake>(MainActivity.this, R.layout.list_item, allEarthquakes);
-            final EarthquakeListAdapter listAdapter = new EarthquakeListAdapter(MainActivity.this, R.layout.list_item, allEarthquakes);
-
-            MainActivity.this.runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run() {
-                    Log.d("UI thread", "I am the UI thread");
-                    listViewDisplay.setAdapter(listAdapter);
-                    Log.e("adapter: ", "count: " + listAdapter.getCount());
-
-                    //set camera to UK
-                    LatLng ukLatLng = new LatLng(55.378, 3.436);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(ukLatLng));
-
-                    for(Earthquake e : allEarthquakes){
-                        double latDouble = Double.parseDouble(e.getGeoLat());
-                        double longDouble = Double.parseDouble(e.getGeoLong());
-                        LatLng currentLatLng = new LatLng(latDouble,longDouble);
-                        mMap.addMarker(new MarkerOptions().position(currentLatLng).title(e.minimalInfo()));
-                    }
-                }
-            });
-
-        }
-
-    }
+//    private class Task implements Runnable
+//    {
+//        List<Earthquake> allEarthquakes = null;
+//        private String url;
+//        public Task(String aurl)
+//        {
+//            url = aurl;
+//        }
+//
+//        @Override
+//        public void run()
+//        {
+//            URL aurl;
+//            URLConnection yc;
+//
+//            //Log.e("MyTag","in run");
+//
+//            try
+//            {
+//                //Log.e("MyTag","in try");
+//                aurl = new URL(url);
+//                yc = aurl.openConnection();
+//
+//                XMLPullParserHandler parser = new XMLPullParserHandler();
+//
+//                allEarthquakes = parser.parse(yc.getInputStream());
+//                mainEarthquakeList.setMainEarthquakeList(allEarthquakes);
+//                Log.e("allEarthquakes", "" + allEarthquakes);
+//
+//            }
+//            catch (IOException ae)
+//            {
+//                Log.e("MyTag", "ioexception");
+//                ae.printStackTrace();
+//            }
+//
+//            //final ArrayAdapter<Earthquake> adapter = new ArrayAdapter<Earthquake>(MainActivity.this, R.layout.list_item, allEarthquakes);
+//            final EarthquakeListAdapter listAdapter = new EarthquakeListAdapter(MainActivity.this, R.layout.list_item, allEarthquakes);
+//
+//        }
+//    }
 
 
 //    public void applyDateFilter(){

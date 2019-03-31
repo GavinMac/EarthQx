@@ -12,7 +12,7 @@ import java.util.List;
 
 public class XMLPullParserHandler {
 
-    List<Earthquake> earthquakeList;
+    private List<Earthquake> earthquakeList;
     private Earthquake currentEarthquake;
     private String text;
     private boolean hitItems = false;
@@ -112,9 +112,9 @@ public class XMLPullParserHandler {
         String[] returnArray = new String[array.length];
         String tempString;
         for(int i = 0; i< array.length; i++){
-            tempString = array[i].replaceAll(".*:", "");
+            tempString = array[i].replaceAll(".*:\\s+", "");
             returnArray[i] = tempString;
-            Log.e("array["+i+"]", tempString);
+            //Log.e("array["+i+"]", tempString);
         }
         return returnArray;
     }

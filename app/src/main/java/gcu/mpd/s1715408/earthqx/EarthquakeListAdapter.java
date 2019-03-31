@@ -17,7 +17,7 @@ public class EarthquakeListAdapter extends ArrayAdapter<Earthquake> {
     private static final String TAG = "EarthquakeListAdapter";
 
     private Context mContext;
-    int mResource;
+    private int mResource;
 
     static class ViewHolder{
         TextView location;

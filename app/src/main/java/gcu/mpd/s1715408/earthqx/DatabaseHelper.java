@@ -32,10 +32,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createTable = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + LOC_COL + " TEXT, "
                 + PUB_DATE + " TEXT, "
-                + OR_DATE_COL + "TEXT, "
+                + OR_DATE_COL + " TEXT, "
                 + LAT_COL + " REAL, "
-                + LONG_COL + "REAL"
-                + DEPTH_COL + " REAL, "
+                + LONG_COL + " REAL, "
+                + DEPTH_COL + " TEXT, "
                 + MAG_COL + " REAL, "
                 + CAT_COL + " TEXT, "
                 + LINK_COL + " TEXT);";
@@ -56,8 +56,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(PUB_DATE, e.getPubDate());
         contentValues.put(OR_DATE_COL, e.getOriginDate());
         contentValues.put(LAT_COL, Float.parseFloat(e.getGeoLat()));
-        contentValues.put(LONG_COL, Float.parseFloat(e.getLocation()));
-        contentValues.put(DEPTH_COL, Float.parseFloat(e.getDepth()));
+        contentValues.put(LONG_COL, Float.parseFloat(e.getGeoLong()));
+        contentValues.put(DEPTH_COL, e.getDepth());
         contentValues.put(MAG_COL, Float.parseFloat(e.getMagnitude()));
         contentValues.put(CAT_COL, e.getCategory());
         contentValues.put(LINK_COL, e.getLink());
