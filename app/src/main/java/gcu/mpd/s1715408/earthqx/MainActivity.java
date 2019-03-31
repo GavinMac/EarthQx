@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button refreshButton;
     private GoogleMap mMap;
     private LocalDate currentDateSelection;
-    private ArrayList<Earthquake> mainEarthquakeList = new ArrayList<>();
-
+    private List<Earthquake> mainEarthquakeList = new ArrayList<>();
     private Handler mainHandler = new Handler();
 
     @Override
@@ -95,11 +94,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         currentDateSelection = LocalDate.parse(stringDate,dtf);
         Log.d("currentDateSelection", ""+currentDateSelection);
 
-        ArrayList<Earthquake>earthquakes = mainEarthquakeList;
+        List<Earthquake>earthquakes = mainEarthquakeList;
         ResultsFinder resultsFinder = new ResultsFinder(earthquakes, currentDateSelection);
+
         List<Earthquake>resultsList = resultsFinder.ResultsList();
 
-        UIWriter uiWriter = new UIWriter(this, mainHandler,resultsList,mMap, listViewDisplay);
+        UIWriter uiWriter = new UIWriter(this, mainHandler, resultsList, mMap, listViewDisplay);
         uiWriter.run();
 
     }
@@ -116,72 +116,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //Run network access on a separate thread;
         DataDownloader dataDownloader = new DataDownloader(this, mainHandler, mainEarthquakeList,listViewDisplay, gMap);
         new Thread(dataDownloader).start();
+        mainEarthquakeList = dataDownloader.GetEarthquakeList();
+        Log.e("mainEarthquakeList", ""+mainEarthquakeList);
     }
-
-    // Need separate thread to access the internet resource over network
-    // Other neater solutions should be adopted in later iterations.
-//    private class Task implements Runnable
-//    {
-//        List<Earthquake> allEarthquakes = null;
-//        private String url;
-//        public Task(String aurl)
-//        {
-//            url = aurl;
-//        }
-//
-//        @Override
-//        public void run()
-//        {
-//            URL aurl;
-//            URLConnection yc;
-//
-//            //Log.e("MyTag","in run");
-//
-//            try
-//            {
-//                //Log.e("MyTag","in try");
-//                aurl = new URL(url);
-//                yc = aurl.openConnection();
-//
-//                XMLPullParserHandler parser = new XMLPullParserHandler();
-//
-//                allEarthquakes = parser.parse(yc.getInputStream());
-//                mainEarthquakeList.setMainEarthquakeList(allEarthquakes);
-//                Log.e("allEarthquakes", "" + allEarthquakes);
-//
-//            }
-//            catch (IOException ae)
-//            {
-//                Log.e("MyTag", "ioexception");
-//                ae.printStackTrace();
-//            }
-//
-//            //final ArrayAdapter<Earthquake> adapter = new ArrayAdapter<Earthquake>(MainActivity.this, R.layout.list_item, allEarthquakes);
-//            final EarthquakeListAdapter listAdapter = new EarthquakeListAdapter(MainActivity.this, R.layout.list_item, allEarthquakes);
-//
-//        }
-//    }
-
-
-//    public void applyDateFilter(){
-//        List<Earthquake> earthquakeList = mainEarthquakeList.getMainEarthquakeList();
-//        List<Earthquake> dateFilteredList = mainEarthquakeList.getDateFilteredList();
-//
-//                if( earthquakeList != null){
-//                    for(Earthquake e : earthquakeList){
-//
-//                        //Get a string date from the earthquake object
-//                        LocalDate eDate = e.getEarthquakeDate();
-//
-//                        Log.d("currentLocalDateSelect","" + currentDateSelection);
-//                        Log.d("eDate", ""+eDate);
-//
-//                        if (eDate == currentDateSelection){
-//                            dateFilteredList.add(e);
-//                        }
-//                    }
-//                }
-//    }
 
     private void toastMessage(String message){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

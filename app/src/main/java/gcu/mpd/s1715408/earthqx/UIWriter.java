@@ -1,3 +1,8 @@
+////////////////////////////////////////
+// Name                 Gavin Macleod //
+// Student ID           S1715408      //
+// Programme of Study   BSc Computing //
+////////////////////////////////////////
 package gcu.mpd.s1715408.earthqx;
 
 import android.content.Context;
@@ -30,7 +35,6 @@ public class UIWriter implements Runnable {
         this.listView = lstView;
     }
 
-
     @Override
     public void run() {
 
@@ -41,7 +45,7 @@ public class UIWriter implements Runnable {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                Log.d("UI thread", "I am the UI thread");
+                //Log.d("UI thread", "I am the UI thread");
                 listView.setAdapter(listAdapter);
                 //Log.e("adapter: ", "count: " + listAdapter.getCount());
 
@@ -59,11 +63,6 @@ public class UIWriter implements Runnable {
                 }
             }
         });
-
-
-
-
-
 
     }
 }

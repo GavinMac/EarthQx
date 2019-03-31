@@ -1,3 +1,9 @@
+////////////////////////////////////////
+// Name                 Gavin Macleod //
+// Student ID           S1715408      //
+// Programme of Study   BSc Computing //
+////////////////////////////////////////
+
 package gcu.mpd.s1715408.earthqx;
 
 import android.content.Context;
@@ -30,7 +36,6 @@ class DataDownloader implements Runnable {
         this.mMap = googleMap;
     }
 
-
     //Download XML from link and call the XML parser
     @Override
     public void run() {
@@ -57,6 +62,10 @@ class DataDownloader implements Runnable {
 
         UIWriter uiWriter = new UIWriter(mainContext, threadHandler, allEarthquakes, mMap, listViewDisplay);
         uiWriter.run();
+    }
+
+    public List<Earthquake>GetEarthquakeList(){
+        return allEarthquakes;
     }
 
     //For database
