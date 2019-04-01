@@ -7,6 +7,7 @@
 package gcu.mpd.s1715408.earthqx;
 
 import android.app.DatePickerDialog;
+import android.database.Cursor;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -90,16 +91,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         String stringDate = (dayOfMonth + "/" + (month + 1) + "/" + year);
         dateTextView.setText(stringDate);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/M/yyy");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d/M/yyyy");
         currentDateSelection = LocalDate.parse(stringDate,dtf);
-        Log.d("currentDateSelection", ""+currentDateSelection);
+        Log.e("currentDateSelection", ""+currentDateSelection);
 
-        List<Earthquake>earthquakes = mainEarthquakeList;
-        ResultsFinder resultsFinder = new ResultsFinder(earthquakes, currentDateSelection);
+        List<Earthquake>earthquakes = mDatabaseHelper.getListByDate(currentDateSelection);
+        Log.e("earthquakesByDate", ""+earthquakes);
 
-        List<Earthquake>resultsList = resultsFinder.ResultsList();
-
-        UIWriter uiWriter = new UIWriter(this, mainHandler, resultsList, mMap, listViewDisplay);
+        UIWriter uiWriter = new UIWriter(this, mainHandler, earthquakes,mMap,listViewDisplay);
         uiWriter.run();
 
     }
@@ -116,8 +115,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //Run network access on a separate thread;
         DataDownloader dataDownloader = new DataDownloader(this, mainHandler, mainEarthquakeList,listViewDisplay, gMap);
         new Thread(dataDownloader).start();
-        mainEarthquakeList = dataDownloader.GetEarthquakeList();
-        Log.e("mainEarthquakeList", ""+mainEarthquakeList);
+        mainEarthquakeList = mDatabaseHelper.getData();
+        //Log.e("mainEarthquakeList", ""+mainEarthquakeList);
     }
 
     private void toastMessage(String message){

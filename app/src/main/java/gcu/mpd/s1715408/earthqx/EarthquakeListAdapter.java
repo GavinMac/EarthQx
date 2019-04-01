@@ -39,10 +39,10 @@ public class EarthquakeListAdapter extends ArrayAdapter<Earthquake> {
         String depth = getItem(position).getDepth();
         String magnitude = getItem(position).getMagnitude();
 
-        Earthquake earthquake = new Earthquake();
-        earthquake.setLocation(location);
-        earthquake.setDepth(depth);
-        earthquake.setMagnitude(magnitude);
+        Earthquake minimalEarthquake = new Earthquake();
+        minimalEarthquake.setLocation(location);
+        minimalEarthquake.setDepth(depth);
+        minimalEarthquake.setMagnitude(magnitude);
 
         ViewHolder holder = new ViewHolder();
 

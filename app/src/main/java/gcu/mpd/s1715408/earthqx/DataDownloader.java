@@ -9,6 +9,7 @@ package gcu.mpd.s1715408.earthqx;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -53,7 +54,7 @@ class DataDownloader implements Runnable {
 
             allEarthquakes = parser.parse(yc.getInputStream());
             //Log.e("allEarthquakes",""+allEarthquakes);
-            //AddDataToDb(allEarthquakes);
+            AddDataToDb(allEarthquakes);
 
         } catch (IOException ae) {
             Log.e("MyTag", "ioexception");
@@ -69,20 +70,32 @@ class DataDownloader implements Runnable {
     }
 
     //For database
-//    public void AddDataToDb(List<Earthquake> earthquakes){
-//        for(Earthquake e : earthquakes){
-//            boolean insertData = mDatabaseHelper.addData(e);
-//
-//            if(insertData){
-//                toastMessage("Data inserted successfully");
-//            } else{
-//                toastMessage("Failed to insert data to database");
-//            }
-//        }
-//    }
+    public void AddDataToDb(List<Earthquake> earthquakes){
+
+        DatabaseHelper mDatabaseHelper = new DatabaseHelper(mainContext);
+
+        for(Earthquake e : earthquakes){
+            boolean insertData = mDatabaseHelper.addData(e);
+
+            if(insertData){
+                toastMessage("Data inserted successfully");
+            } else{
+                toastMessage("Failed to insert data to database");
+            }
+        }
+    }
 
     private void toastMessage(String message){
-        Toast.makeText(mainContext, message, Toast.LENGTH_SHORT).show();
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        final String messageString = message;
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(mainContext, messageString, Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
 }

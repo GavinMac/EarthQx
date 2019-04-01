@@ -7,8 +7,15 @@ import java.io.InputStream;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class XMLPullParserHandler {
 
@@ -79,6 +86,7 @@ public class XMLPullParserHandler {
                                 currentEarthquake.setLink(text);
                             } else if (tagname.equalsIgnoreCase("pubDate")) {
                                 currentEarthquake.setPubDate(text);
+                                currentEarthquake.setEarthquakeDate(setLocalDate(text));
                             } else if (tagname.equalsIgnoreCase("category")) {
                                 currentEarthquake.setCategory(text);
                             }
@@ -117,6 +125,23 @@ public class XMLPullParserHandler {
             //Log.e("array["+i+"]", tempString);
         }
         return returnArray;
+    }
+
+    public LocalDate setLocalDate(String pubDate){
+
+        //Log.d("pubDate", pubDate);
+        Date rawDataAsDate = new Date();
+
+        try{
+            rawDataAsDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.UK).parse(pubDate);
+        }
+        catch(ParseException e){
+            Log.e("Date Converting Error", "Can't convert string date to earthquake returnDate");
+        }
+
+        LocalDate returnDate = rawDataAsDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        //Log.d("returnDate",": " + returnDate);
+        return returnDate;
     }
 
 }

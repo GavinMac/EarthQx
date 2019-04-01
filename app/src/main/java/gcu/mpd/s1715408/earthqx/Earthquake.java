@@ -29,6 +29,23 @@ public class Earthquake {
     private String geoLong;
     public LocalDate earthquakeDate;
 
+    public Earthquake(){
+    }
+
+    public Earthquake(String title, String description, String location, String originDate, String magnitude, String depth, String link, String pubDate, String category, String geoLat, String geoLong) {
+        this.title = title;
+        this.description = description;
+        this.location = location;
+        this.originDate = originDate;
+        this.magnitude = magnitude;
+        this.depth = depth;
+        this.link = link;
+        this.pubDate = pubDate;
+        this.category = category;
+        this.geoLat = geoLat;
+        this.geoLong = geoLong;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -113,25 +130,7 @@ public class Earthquake {
         this.geoLong = geoLong;
     }
 
-
-
-    public LocalDate getEarthquakeDate(){
-
-        String rawData = pubDate;
-        //Log.d("rawData", rawData);
-        Date rawDataAsDate = new Date();
-
-        try{
-            rawDataAsDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.UK).parse(rawData);
-        }
-        catch(ParseException e){
-            Log.e("Date Converting Error", "Can't convert string date to earthquake returnDate");
-        }
-
-        LocalDate returnDate = rawDataAsDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        //Log.d("returnDate",": " + returnDate);
-        return returnDate;
-    }
+    public LocalDate getEarthquakeDate(){ return earthquakeDate; }
 
     public void setEarthquakeDate(LocalDate earthquakeDate){this.earthquakeDate = earthquakeDate;}
 

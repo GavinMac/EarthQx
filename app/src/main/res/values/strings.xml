@@ -7,6 +7,7 @@
     <string name="google_maps_key">AIzaSyBwC0zf9ZKgW_FoC1vE4qMZ4J4gGOELIzo</string>
     <string name="title_activity_date_picker">DatePickerActivity</string>
     <string name="dateEditText">Enter Date</string>
+    <string name="spinnerDefault">Select Filter</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
