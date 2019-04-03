@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import java.io.IOException;
@@ -22,19 +23,23 @@ import java.util.List;
 
 class DataDownloader implements Runnable {
 
+    private DatabaseHelper mDatabaseHelper;
     public List<Earthquake> allEarthquakes;
     private ListView listViewDisplay;
     private GoogleMap mMap;
     private String url = "http://quakes.bgs.ac.uk/feeds/MhSeismology.xml";
     private Context mainContext;
     private Handler threadHandler;
+    private TextView resultsTxtView;
 
-    public DataDownloader(Context context, Handler handler, List<Earthquake> eArrayList, ListView listView, GoogleMap googleMap) {
+    public DataDownloader(Context context, DatabaseHelper dbHelper, Handler handler, List<Earthquake> eArrayList, ListView listView, GoogleMap googleMap, TextView resultsTextView) {
         this.mainContext = context;
+        this.mDatabaseHelper = dbHelper;
         this.threadHandler = handler;
         this.allEarthquakes = eArrayList;
         this.listViewDisplay = listView;
         this.mMap = googleMap;
+        this.resultsTxtView = resultsTextView;
     }
 
     //Download XML from link and call the XML parser
@@ -61,7 +66,7 @@ class DataDownloader implements Runnable {
             ae.printStackTrace();
         }
 
-        UIWriter uiWriter = new UIWriter(mainContext, threadHandler, allEarthquakes, mMap, listViewDisplay);
+        UIWriter uiWriter = new UIWriter(mainContext, threadHandler, allEarthquakes, mMap, listViewDisplay, resultsTxtView);
         uiWriter.run();
     }
 
@@ -71,8 +76,6 @@ class DataDownloader implements Runnable {
 
     //For database
     public void AddDataToDb(List<Earthquake> earthquakes){
-
-        DatabaseHelper mDatabaseHelper = new DatabaseHelper(mainContext);
 
         for(Earthquake e : earthquakes){
             boolean insertData = mDatabaseHelper.addData(e);

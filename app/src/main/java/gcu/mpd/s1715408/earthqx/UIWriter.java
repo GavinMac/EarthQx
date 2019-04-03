@@ -10,11 +10,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 import java.util.logging.LogRecord;
@@ -26,13 +29,15 @@ public class UIWriter implements Runnable {
     private ListView listView;
     private Context mainContext;
     private Handler threadHandler;
+    private TextView resultCountTxtView;
 
-    public UIWriter(Context context, Handler handler, List<Earthquake> eList, GoogleMap gMap, ListView lstView) {
+    public UIWriter(Context context, Handler handler, List<Earthquake> eList, GoogleMap gMap, ListView lstView, TextView resultsTextView) {
         this.mainContext = context;
         this.threadHandler = handler;
         this.earthquakeList = eList;
         this.map = gMap;
         this.listView = lstView;
+        this.resultCountTxtView = resultsTextView;
     }
 
     @Override
@@ -45,6 +50,8 @@ public class UIWriter implements Runnable {
         handler.post(new Runnable() {
             @Override
             public void run() {
+
+                resultCountTxtView.setText(Integer.toString(earthquakeList.size()));
                 //Log.d("UI thread", "I am the UI thread");
                 listView.setAdapter(listAdapter);
                 //Log.e("adapter: ", "count: " + listAdapter.getCount());

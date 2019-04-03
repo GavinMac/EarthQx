@@ -9,15 +9,18 @@ package gcu.mpd.s1715408.earthqx;
 import android.app.DatePickerDialog;
 import android.database.Cursor;
 import android.os.Handler;
+import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,16 +45,18 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener
 {
     DatabaseHelper mDatabaseHelper;
 
     private TextView dateTextView;
+    private TextView resultCountTextView;
     private ListView listViewDisplay;
-    private Button refreshButton;
+    private Spinner filterSpinner;
     private GoogleMap mMap;
     private LocalDate currentDateSelection;
     private List<Earthquake> mainEarthquakeList = new ArrayList<>();
+    private List<Earthquake> dateFilteredEarthquakes = new ArrayList<>();
     private Handler mainHandler = new Handler();
 
     @Override
@@ -59,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mDatabaseHelper = new DatabaseHelper(this);
         // Set up the raw links to the graphical components
         dateTextView = findViewById(R.id.dateTextView);
         dateTextView.setOnClickListener(new View.OnClickListener(){
@@ -69,14 +73,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 datePicker.show(getSupportFragmentManager(), "date picker");
             }
         });
+
+        resultCountTextView = findViewById(R.id.resultCountTextView);
         listViewDisplay = findViewById(R.id.listViewDisplay);
-        refreshButton = findViewById(R.id.refreshButton);
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadData(mMap);
-            }
-        });
+
+        filterSpinner = findViewById(R.id.filterSpinner);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.filters, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterSpinner.setAdapter(spinnerAdapter);
+        filterSpinner.setOnItemSelectedListener(this);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -95,12 +101,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         currentDateSelection = LocalDate.parse(stringDate,dtf);
         Log.e("currentDateSelection", ""+currentDateSelection);
 
-        List<Earthquake>earthquakes = mDatabaseHelper.getListByDate(currentDateSelection);
-        Log.e("earthquakesByDate", ""+earthquakes);
+        dateFilteredEarthquakes = mDatabaseHelper.getListByDate(currentDateSelection);
+        Log.e("earthquakesByDate", ""+dateFilteredEarthquakes);
 
-        UIWriter uiWriter = new UIWriter(this, mainHandler, earthquakes,mMap,listViewDisplay);
+        UIWriter uiWriter = new UIWriter(this, mainHandler, dateFilteredEarthquakes,mMap,listViewDisplay, resultCountTextView);
         uiWriter.run();
-
     }
 
     //Use onMapReady to run the other functions to load markers
@@ -113,10 +118,58 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void loadData(GoogleMap gMap)
     {
         //Run network access on a separate thread;
-        DataDownloader dataDownloader = new DataDownloader(this, mainHandler, mainEarthquakeList,listViewDisplay, gMap);
+        mDatabaseHelper = new DatabaseHelper(this);
+        DataDownloader dataDownloader = new DataDownloader(this, mDatabaseHelper, mainHandler, mainEarthquakeList,listViewDisplay, gMap, resultCountTextView);
         new Thread(dataDownloader).start();
         mainEarthquakeList = mDatabaseHelper.getData();
         //Log.e("mainEarthquakeList", ""+mainEarthquakeList);
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String text = parent.getItemAtPosition(position).toString();
+        Log.e("position",""+position);
+        toastMessage("Filtered " + text);
+
+        List<Earthquake>listToInput;
+        List<Earthquake>listToDisplay = new ArrayList<>();
+
+        if(dateFilteredEarthquakes != null){
+            listToInput = dateFilteredEarthquakes;
+        }
+        else{
+            listToInput = mainEarthquakeList;
+        }
+
+        switch (position){
+            case 0 :
+                listToDisplay = mDatabaseHelper.getData();
+                dateFilteredEarthquakes.clear();
+                currentDateSelection = null;
+                break;
+
+            case 1 :
+                listToDisplay = mDatabaseHelper.getHighestMagnitude();
+                break;
+
+            case 2 :
+                listToDisplay = mDatabaseHelper.getDeepestQuake(listToInput);
+                break;
+
+            default :
+                toastMessage("Unable to filter");
+        }
+
+        //Log.e("listToDisplay",""+listToDisplay);
+
+        UIWriter uiWriter = new UIWriter(this, mainHandler, listToDisplay, mMap, listViewDisplay, resultCountTextView);
+        uiWriter.run();
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
     }
 
     private void toastMessage(String message){

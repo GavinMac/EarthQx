@@ -31,7 +31,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:focusable="true"
+                android:layout_marginEnd="20dp"
+                android:focusable="false"
                 android:clickable="true"
                 android:layout_centerVertical="true"
                 android:text="@string/dateEditText"
@@ -40,23 +41,32 @@
                 style="@android:style/Widget.EditText"/>
 
             <Spinner
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/refreshButton"
+                android:id="@+id/filterSpinner"
+                android:spinnerMode="dropdown"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
                 android:layout_marginEnd="20dp"
                 android:layout_marginStart="20dp"
                 android:layout_centerVertical="true"
-                android:prompt="@string/spinnerDefault">
-
+                style="@android:style/Widget.Spinner.DropDown">
             </Spinner>
 
-            <Button
-                android:id="@+id/refreshButton"
-                android:layout_width="100dp"
+            <TextView
+                android:id="@+id/resultsCountText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/getDataBtn"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"/>
+                android:text="@string/resultCountText"
+                android:layout_toEndOf="@id/dateTextView"
+                android:layout_centerVertical="true"
+                android:textSize="24sp"/>
+            <TextView
+                android:id="@+id/resultCountTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/resultsCountText"
+                android:layout_centerVertical="true"
+                android:textSize="24sp"/>
 
         </RelativeLayout>
 

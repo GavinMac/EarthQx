@@ -148,7 +148,7 @@ public class Earthquake {
     }
 
     public String minimalInfo(){
-        return location + " - " + magnitude;
+        return location + "\nM: " + magnitude;
     }
 
 }

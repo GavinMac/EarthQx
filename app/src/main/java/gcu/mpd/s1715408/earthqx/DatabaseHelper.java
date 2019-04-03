@@ -3,6 +3,7 @@ package gcu.mpd.s1715408.earthqx;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -19,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
 
     private static final String TABLE_NAME = "earthquakes";
-    //private static final String ID_COL = "ID";
+    private static final String ID_COL = "ID";
     private static final String TITLE_COL = "title";
     private static final String DESC_COL = "description";
     private static final String LOC_COL = "location";
@@ -39,7 +40,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable = "CREATE TABLE " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+        String createTable = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME
+                + "("+ ID_COL + " TEXT PRIMARY KEY UNIQUE, "
                 + TITLE_COL + " TEXT, "
                 + DESC_COL + " TEXT, "
                 + LOC_COL + " TEXT, "
@@ -51,19 +53,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + MAG_COL + " REAL, "
                 + CAT_COL + " TEXT, "
                 + LINK_COL + " TEXT);";
-
         db.execSQL(createTable);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME + ";");
         onCreate(db);
     }
 
-    public boolean addData(Earthquake e){
+    public boolean addData(Earthquake e) {
         SQLiteDatabase db = this.getWritableDatabase();
+
         ContentValues contentValues = new ContentValues();
+        contentValues.put(ID_COL, GenerateId(e));
         contentValues.put(TITLE_COL, e.getTitle());
         contentValues.put(DESC_COL, e.getDescription());
         contentValues.put(LOC_COL, e.getLocation());
@@ -76,57 +79,74 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(CAT_COL, e.getCategory());
         contentValues.put(LINK_COL, e.getLink());
 
-        long result = db.insert(TABLE_NAME, null, contentValues);
+        try{
+            long result = db.insert(TABLE_NAME, null, contentValues);
 
-        if(result == -1){
+            if (result == -1) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch(SQLiteConstraintException ex){
+            Log.e("SQLiteException", ""+ex);
             return false;
-        }else {
-            return true;
         }
+
     }
 
-    public List<Earthquake> getData(){
+    public List<Earthquake> getData() {
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
-
-        List<Earthquake> eArray = QueryReturnList(data);
-        return eArray;
+        return QueryReturnList(data);
     }
 
-    public List<Earthquake>getListByDate(LocalDate dateInput){
+    public List<Earthquake> getListByDate(LocalDate dateInput) {
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + PUB_DATE + " like " + "'"+dateInput + "'", null);
+        Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + PUB_DATE + " = " + "'" + dateInput + "'", null);
 
-        Log.e("Cursor", ""+data.getColumnCount());
-        Log.e("QueryReturnList", ""+QueryReturnList(data));
+        Log.e("Cursor", "" + data.getColumnCount());
 
         return QueryReturnList(data);
     }
 
-
-    public List<Earthquake>getDeepestQuake(List<Earthquake> earthquakeList){
+    public List<Earthquake> getDeepestQuake(List<Earthquake> earthquakeList) {
 
         List<Integer> depths = new ArrayList<>();
-        for (Earthquake e : earthquakeList){
-            depths.add(Integer.parseInt(e.getDepth()));
+        for (Earthquake e : earthquakeList) {
+            String depthString = e.getDepth().replaceAll("[^0-9]", "");
+            depths.add(Integer.parseInt(depthString));
         }
-
         int max = Collections.max(depths);
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + DEPTH_COL + " = " + max, null);
+        Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + DEPTH_COL + " LIKE '%" + max + "%'", null);
 
         return QueryReturnList(data);
     }
 
+    public List<Earthquake> getHighestMagnitude() {
 
-    private List<Earthquake>QueryReturnList(Cursor data){
+//        List<Float> mags = new ArrayList<>();
+//        for (Earthquake e : earthquakeList) {
+//            mags.add(Float.parseFloat(e.getMagnitude()));
+//        }
+//        float max = Collections.max(mags);
 
-        List<Earthquake>returnList = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        //Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + MAG_COL + " = " + max, null);
+        Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + MAG_COL + "= (SELECT MAX(" + MAG_COL + ") FROM " + TABLE_NAME+")", null);
 
-        int titleIndex = data.getColumnIndex(TITLE_COL),
+        return QueryReturnList(data);
+    }
+
+    private List<Earthquake> QueryReturnList(Cursor data) {
+
+        List<Earthquake> returnList = new ArrayList<>();
+
+        int idIndex = data.getColumnIndex(ID_COL),
+                titleIndex = data.getColumnIndex(TITLE_COL),
                 descIndex = data.getColumnIndex(DESC_COL),
                 locIndex = data.getColumnIndex(LOC_COL),
                 pubIndex = data.getColumnIndex(PUB_DATE),
@@ -138,7 +158,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 catIndex = data.getColumnIndex(CAT_COL),
                 linkIndex = data.getColumnIndex(LINK_COL);
 
-        while(data.moveToNext()){
+        //Log.e("data at first pointer", ""+data.isFirst());
+        //Log.e("data pointer position", ""+data.getPosition());
+
+        data.moveToFirst();
+        while (data.moveToNext()) {
             Earthquake e = new Earthquake(
                     data.getString(titleIndex),
                     data.getString(descIndex),
@@ -154,7 +178,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             );
             returnList.add(e);
         }
+        data.close();
         return returnList;
+    }
+
+    private String GenerateId(Earthquake earthquake){
+        String returnId;
+        String timeStamp = earthquake.getEarthquakeDate().toString().replaceAll("[^0-9]", "");
+        String latLong = (earthquake.getGeoLat() + earthquake.getGeoLong()).replaceAll("[^0-9]", "");
+        returnId = timeStamp + latLong;
+        return returnId;
+    }
+
+    public void DeleteTable() {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAME, null, null);
+        //db.execSQL("DELETE FROM " + TABLE_NAME + ";");
+
     }
 
 
