@@ -138,14 +138,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<Earthquake> getHighestMagnitude(List<Earthquake> earthquakeList) {
 
-        List<Float> mags = new ArrayList<>();
+        List<Double> mags = new ArrayList<>();
         String earthquakeId = earthquakeList.get(0).getId();
 
         for (Earthquake e : earthquakeList) {
             String magString = e.getMagnitude();
-            mags.add(Float.parseFloat(magString));
+            mags.add(Double.parseDouble(magString));
         }
-        float max = Collections.max(mags);
+        double max = Collections.max(mags);
 
         for(Earthquake e : earthquakeList){
             if(Float.parseFloat(e.getMagnitude()) == max){
@@ -159,11 +159,67 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return QueryReturnList(data);
     }
 
-    private List<Earthquake>GetFurthestCompassPoint(List<Earthquake> earthquakeList, String compassPoint){
+    public List<Earthquake>getFurthestCompassPoint(List<Earthquake> earthquakeList, String compassPoint){
 
-        List<Earthquake>returnList = new ArrayList<>();
+        List<Double>coordinates = new ArrayList<>();
+        //String queryModifier = "";
+        String earthquakeId ="";
 
-        return returnList;
+        for(Earthquake e : earthquakeList){
+            if(compassPoint.equals("north") || compassPoint.equals("south")){
+                coordinates.add(Double.parseDouble(e.getGeoLat()));
+            }
+            else if(compassPoint.equals("east" )|| compassPoint.equals("west")){
+                coordinates.add(Double.parseDouble(e.getGeoLong()));
+            }
+        }
+
+        double max = Collections.max(coordinates);
+        double min = Collections.min(coordinates);
+
+        for(Earthquake e : earthquakeList){
+            double lat = Double.parseDouble(e.getGeoLat());
+            double lon = Double.parseDouble(e.getGeoLong());
+
+            switch(compassPoint){
+                case "north" :
+                    if(lat == max){
+                    earthquakeId = e.getId();
+                    }
+                    //queryModifier = " WHERE geoLat = " + max + ";";
+                    break;
+
+                case "south" :
+                    if(lat == min){
+                        earthquakeId = e.getId();
+                    }
+                    //queryModifier = " WHERE geoLat = " + min + ";";
+                    break;
+
+                case "east" :
+                    if(lon == max){
+                        earthquakeId = e.getId();
+                    }
+                    //queryModifier = " WHERE geoLong = " + max + ";";
+                    break;
+
+                case "west" :
+                    if(lon == min){
+                        earthquakeId = e.getId();
+                    }
+                    //queryModifier = " WHERE geoLong = " + min + ";";
+                    break;
+            }
+
+        }
+
+
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        //Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + queryModifier,null);
+        Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ID_COL + " = '" + earthquakeId + "'",null);
+
+        return QueryReturnList(data);
     }
 
     private List<Earthquake> QueryReturnList(Cursor data) {

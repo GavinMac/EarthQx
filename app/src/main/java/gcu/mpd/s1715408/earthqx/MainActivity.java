@@ -157,11 +157,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 listToDisplay = mDatabaseHelper.getDeepestQuake(listToInput);
                 break;
 
+            case 3 :
+                listToDisplay = mDatabaseHelper.getFurthestCompassPoint(listToInput, "north");
+                break;
+
+            case 4:
+                listToDisplay = mDatabaseHelper.getFurthestCompassPoint(listToInput, "south");
+                break;
+
+            case 5 :
+                listToDisplay = mDatabaseHelper.getFurthestCompassPoint(listToInput, "east");
+                break;
+
+            case 6:
+                listToDisplay = mDatabaseHelper.getFurthestCompassPoint(listToInput, "west");
+                break;
+
             default :
                 toastMessage("Unable to filter");
         }
 
-        //Log.e("listToDisplay",""+listToDisplay);
+        Log.e("listToDisplay",""+listToDisplay);
 
         UIWriter uiWriter = new UIWriter(this, mainHandler, listToDisplay, mMap, listViewDisplay, resultCountTextView, dateTextView, currentDateSelection);
         uiWriter.run();

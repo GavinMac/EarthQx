@@ -16,8 +16,8 @@
         <item>Deepest Earthquake</item>
         <item>Most Northerly</item>
         <item>Most Southerly</item>
-        <item>Most Westerly</item>
         <item>Most Easterly</item>
+        <item>Most Westerly</item>
     </string-array>
     
 </resources>
