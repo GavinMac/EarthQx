@@ -18,6 +18,7 @@ import com.google.android.gms.maps.GoogleMap;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +32,10 @@ class DataDownloader implements Runnable {
     private Context mainContext;
     private Handler threadHandler;
     private TextView resultsTxtView;
+    private TextView dateTextView;
+    private LocalDate currentDate;
 
-    public DataDownloader(Context context, DatabaseHelper dbHelper, Handler handler, List<Earthquake> eArrayList, ListView listView, GoogleMap googleMap, TextView resultsTextView) {
+    public DataDownloader(Context context, DatabaseHelper dbHelper, Handler handler, List<Earthquake> eArrayList, ListView listView, GoogleMap googleMap, TextView resultsTextView, TextView dateTxtView, LocalDate currDate) {
         this.mainContext = context;
         this.mDatabaseHelper = dbHelper;
         this.threadHandler = handler;
@@ -40,6 +43,8 @@ class DataDownloader implements Runnable {
         this.listViewDisplay = listView;
         this.mMap = googleMap;
         this.resultsTxtView = resultsTextView;
+        this.dateTextView = dateTxtView;
+        this.currentDate = currDate;
     }
 
     //Download XML from link and call the XML parser
@@ -66,7 +71,7 @@ class DataDownloader implements Runnable {
             ae.printStackTrace();
         }
 
-        UIWriter uiWriter = new UIWriter(mainContext, threadHandler, allEarthquakes, mMap, listViewDisplay, resultsTxtView);
+        UIWriter uiWriter = new UIWriter(mainContext, threadHandler, allEarthquakes, mMap, listViewDisplay, resultsTxtView, dateTextView, currentDate);
         uiWriter.run();
     }
 

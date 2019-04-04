@@ -38,6 +38,7 @@
                 android:text="@string/dateEditText"
                 android:textAlignment="center"
                 android:textSize="28sp"
+                android:textColor="@color/gray"
                 style="@android:style/Widget.EditText"/>
 
             <Spinner

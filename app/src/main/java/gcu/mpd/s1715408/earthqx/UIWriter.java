@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.w3c.dom.Text;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.LogRecord;
 
@@ -30,14 +31,18 @@ public class UIWriter implements Runnable {
     private Context mainContext;
     private Handler threadHandler;
     private TextView resultCountTxtView;
+    private TextView dateTextView;
+    private LocalDate currentDateSelection;
 
-    public UIWriter(Context context, Handler handler, List<Earthquake> eList, GoogleMap gMap, ListView lstView, TextView resultsTextView) {
+    public UIWriter(Context context, Handler handler, List<Earthquake> eList, GoogleMap gMap, ListView lstView, TextView resultsTextView, TextView dateTextView, LocalDate currDateSelection) {
         this.mainContext = context;
         this.threadHandler = handler;
         this.earthquakeList = eList;
         this.map = gMap;
         this.listView = lstView;
         this.resultCountTxtView = resultsTextView;
+        this.dateTextView = dateTextView;
+        this.currentDateSelection = currDateSelection;
     }
 
     @Override
@@ -62,12 +67,19 @@ public class UIWriter implements Runnable {
                 map.animateCamera(CameraUpdateFactory.zoomTo(4.0f));
                 map.clear();
 
+                if(currentDateSelection == null){
+                    dateTextView.setText(R.string.dateEditText);
+                }
+
                 for (Earthquake e : earthquakeList) {
                     double latDouble = Double.parseDouble(e.getGeoLat());
                     double longDouble = Double.parseDouble(e.getGeoLong());
                     LatLng currentLatLng = new LatLng(latDouble, longDouble);
                     map.addMarker(new MarkerOptions().position(currentLatLng).title(e.minimalInfo()));
                 }
+
+
+
             }
         });
 

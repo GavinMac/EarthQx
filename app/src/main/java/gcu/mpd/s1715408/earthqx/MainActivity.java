@@ -102,9 +102,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.e("currentDateSelection", ""+currentDateSelection);
 
         dateFilteredEarthquakes = mDatabaseHelper.getListByDate(currentDateSelection);
-        Log.e("earthquakesByDate", ""+dateFilteredEarthquakes);
+        //Log.e("earthquakesByDate", ""+dateFilteredEarthquakes);
 
-        UIWriter uiWriter = new UIWriter(this, mainHandler, dateFilteredEarthquakes,mMap,listViewDisplay, resultCountTextView);
+        UIWriter uiWriter = new UIWriter(this, mainHandler, dateFilteredEarthquakes,mMap,listViewDisplay, resultCountTextView, dateTextView, currentDateSelection);
         uiWriter.run();
     }
 
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         //Run network access on a separate thread;
         mDatabaseHelper = new DatabaseHelper(this);
-        DataDownloader dataDownloader = new DataDownloader(this, mDatabaseHelper, mainHandler, mainEarthquakeList,listViewDisplay, gMap, resultCountTextView);
+        DataDownloader dataDownloader = new DataDownloader(this, mDatabaseHelper, mainHandler, mainEarthquakeList,listViewDisplay, gMap, resultCountTextView, dateTextView, currentDateSelection);
         new Thread(dataDownloader).start();
         mainEarthquakeList = mDatabaseHelper.getData();
         //Log.e("mainEarthquakeList", ""+mainEarthquakeList);
@@ -133,14 +133,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         toastMessage("Filtered " + text);
 
         List<Earthquake>listToInput;
-        List<Earthquake>listToDisplay = new ArrayList<>();
-
-        if(dateFilteredEarthquakes != null){
+        if(currentDateSelection != null){
             listToInput = dateFilteredEarthquakes;
         }
         else{
             listToInput = mainEarthquakeList;
         }
+
+        List<Earthquake>listToDisplay = new ArrayList<>();
 
         switch (position){
             case 0 :
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
 
             case 1 :
-                listToDisplay = mDatabaseHelper.getHighestMagnitude();
+                listToDisplay = mDatabaseHelper.getHighestMagnitude(listToInput);
                 break;
 
             case 2 :
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //Log.e("listToDisplay",""+listToDisplay);
 
-        UIWriter uiWriter = new UIWriter(this, mainHandler, listToDisplay, mMap, listViewDisplay, resultCountTextView);
+        UIWriter uiWriter = new UIWriter(this, mainHandler, listToDisplay, mMap, listViewDisplay, resultCountTextView, dateTextView, currentDateSelection);
         uiWriter.run();
 
     }

@@ -16,6 +16,7 @@ import java.util.Locale;
 
 public class Earthquake {
 
+    private String id;
     private String title;
     private String description;
     private String location;
@@ -32,7 +33,8 @@ public class Earthquake {
     public Earthquake(){
     }
 
-    public Earthquake(String title, String description, String location, String originDate, String magnitude, String depth, String link, String pubDate, String category, String geoLat, String geoLong) {
+    public Earthquake(String id, String title, String description, String location, String originDate, String magnitude, String depth, String link, String pubDate, String category, String geoLat, String geoLong) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.location = location;
@@ -44,6 +46,14 @@ public class Earthquake {
         this.category = category;
         this.geoLat = geoLat;
         this.geoLong = geoLong;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {
