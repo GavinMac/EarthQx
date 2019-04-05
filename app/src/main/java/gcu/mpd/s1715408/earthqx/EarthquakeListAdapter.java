@@ -85,4 +85,6 @@ public class EarthquakeListAdapter extends ArrayAdapter<Earthquake> {
         return convertView;
 
     }
+    
+
 }

@@ -21,10 +21,10 @@
 
         <RelativeLayout
             android:id="@+id/topBarRelView"
-            android:layout_width="match_parent"
-            android:layout_height="75dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp">
 
             <TextView
                 android:id="@+id/dateTextView"
@@ -73,34 +73,32 @@
         </RelativeLayout>
 
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:map="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
-            tools:context=".MapsActivity" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-        <ListView
-            android:id="@+id/listViewDisplay"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:background="@color/white"/>
+            <ListView
+                android:id="@+id/listViewDisplay"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:background="@color/white"/>
 
-        <!--<TextView-->
-            <!--android:id="@+id/acknowledgement"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:paddingTop="5dp"-->
-            <!--android:text="@string/copyrightCredit"-->
-            <!--android:textAlignment="center"-->
-            <!--android:textSize="14sp"-->
-            <!--android:layout_alignBottom="@id/map"/>-->
+            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:map="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                tools:context=".MapsActivity" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 

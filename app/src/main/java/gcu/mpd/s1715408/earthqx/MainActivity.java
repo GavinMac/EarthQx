@@ -7,6 +7,7 @@
 package gcu.mpd.s1715408.earthqx;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
 import android.support.annotation.StringRes;
@@ -76,6 +77,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         resultCountTextView = findViewById(R.id.resultCountTextView);
         listViewDisplay = findViewById(R.id.listViewDisplay);
+        listViewDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, EarthquakeInfoActivity.class);
+                intent.putExtra("Earthquake", listViewDisplay.getItemAtPosition(position).toString());
+                startActivity(intent);
+            }
+        });
 
         filterSpinner = findViewById(R.id.filterSpinner);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.filters, android.R.layout.simple_spinner_item);
