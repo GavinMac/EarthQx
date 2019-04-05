@@ -9,6 +9,16 @@
     <string name="dateEditText">Enter Date</string>
     <string name="spinnerDefault">Select Filter</string>
     <string name="resultCountText">"Results: "</string>
+    <string name="LocationTitle">Location</string>
+    <string name="MagnitudeTitle">Magnitude</string>
+    <string name="DepthTitle">Depth</string>
+    <string name="OriginDateTitle">Origin Date</string>
+    <string name="PublishDateTitle">Publish Date</string>
+    <string name="LatLongTitle">Latitude/Longitude</string>
+    <string name="CategoryTitle">Category</string>
+    <string name="LinkTitle">Link</string>
+    <string name="zero">0</string>
+
 
     <string-array name="filters">
         <item>Show All</item>

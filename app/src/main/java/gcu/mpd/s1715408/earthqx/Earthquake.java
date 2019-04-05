@@ -7,6 +7,7 @@ package gcu.mpd.s1715408.earthqx;
 
 import android.util.Log;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -14,7 +15,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
 
-public class Earthquake {
+public class Earthquake implements Serializable {
 
     private String id;
     private String title;

@@ -15,6 +15,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         // Set up the raw links to the graphical components
         dateTextView = findViewById(R.id.dateTextView);
+        dateTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_date_range, 0, 0, 0);
         dateTextView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -81,13 +83,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, EarthquakeInfoActivity.class);
-                intent.putExtra("Earthquake", listViewDisplay.getItemAtPosition(position).toString());
+                Earthquake earthquakeObj = (Earthquake)listViewDisplay.getItemAtPosition(position);
+                intent.putExtra("earthquake", earthquakeObj);
                 startActivity(intent);
             }
         });
 
         filterSpinner = findViewById(R.id.filterSpinner);
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.filters, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.filters, R.layout.filter_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterSpinner.setAdapter(spinnerAdapter);
         filterSpinner.setOnItemSelectedListener(this);
@@ -131,14 +134,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         DataDownloader dataDownloader = new DataDownloader(this, mDatabaseHelper, mainHandler, mainEarthquakeList,listViewDisplay, gMap, resultCountTextView, dateTextView, currentDateSelection);
         new Thread(dataDownloader).start();
         mainEarthquakeList = mDatabaseHelper.getData();
-        //Log.e("mainEarthquakeList", ""+mainEarthquakeList);
     }
 
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String text = parent.getItemAtPosition(position).toString();
-        Log.e("position",""+position);
         toastMessage("Filtered " + text);
 
         List<Earthquake>listToInput;
@@ -154,32 +155,39 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         switch (position){
             case 0 :
                 listToDisplay = mDatabaseHelper.getData();
+                filterSpinner.getAdapter().getDropDownView(position,view,parent).setBackgroundResource(R.drawable.ic_menu);
                 dateFilteredEarthquakes.clear();
                 currentDateSelection = null;
                 break;
 
             case 1 :
                 listToDisplay = mDatabaseHelper.getHighestMagnitude(listToInput);
+                filterSpinner.getAdapter().getDropDownView(position,view,parent).setBackgroundResource(R.drawable.ic_magnitude);
                 break;
 
             case 2 :
                 listToDisplay = mDatabaseHelper.getDeepestQuake(listToInput);
+                filterSpinner.getAdapter().getDropDownView(position,view,parent).setBackgroundResource(R.drawable.ic_deepness);
                 break;
 
             case 3 :
                 listToDisplay = mDatabaseHelper.getFurthestCompassPoint(listToInput, "north");
+                filterSpinner.getAdapter().getDropDownView(position,view,parent).setBackgroundResource(R.drawable.ic_north);
                 break;
 
             case 4:
                 listToDisplay = mDatabaseHelper.getFurthestCompassPoint(listToInput, "south");
+                filterSpinner.getAdapter().getDropDownView(position,view,parent).setBackgroundResource(R.drawable.ic_south);
                 break;
 
             case 5 :
                 listToDisplay = mDatabaseHelper.getFurthestCompassPoint(listToInput, "east");
+                filterSpinner.getAdapter().getDropDownView(position,view,parent).setBackgroundResource(R.drawable.ic_east);
                 break;
 
             case 6:
                 listToDisplay = mDatabaseHelper.getFurthestCompassPoint(listToInput, "west");
+                filterSpinner.getAdapter().getDropDownView(position,view,parent).setBackgroundResource(R.drawable.ic_west);
                 break;
 
             default :
@@ -198,7 +206,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void toastMessage(String message){
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Toast toast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 
 }
