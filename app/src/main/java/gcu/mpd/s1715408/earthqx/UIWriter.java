@@ -8,21 +8,21 @@ package gcu.mpd.s1715408.earthqx;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.w3c.dom.Text;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.logging.LogRecord;
 
+/**
+ * Run on the UI thread, sets all text, adapters and markers needed
+ */
 public class UIWriter implements Runnable {
 
     private List<Earthquake> earthquakeList;
@@ -59,7 +59,6 @@ public class UIWriter implements Runnable {
                 resultCountTxtView.setText(Integer.toString(earthquakeList.size()));
                 //Log.d("UI thread", "I am the UI thread");
                 listView.setAdapter(listAdapter);
-                //Log.e("adapter: ", "count: " + listAdapter.getCount());
 
                 //set camera to UK
                 LatLng ukLatLng = new LatLng(55.378052, -3.435973);
@@ -72,14 +71,17 @@ public class UIWriter implements Runnable {
                 }
 
                 for (Earthquake e : earthquakeList) {
+
+                    ColourManager colourManager = new ColourManager(Double.parseDouble(e.getMagnitude()));
+
                     double latDouble = Double.parseDouble(e.getGeoLat());
                     double longDouble = Double.parseDouble(e.getGeoLong());
                     LatLng currentLatLng = new LatLng(latDouble, longDouble);
-                    map.addMarker(new MarkerOptions().position(currentLatLng).title(e.minimalInfo()));
+                    map.addMarker(new MarkerOptions().position(currentLatLng)
+                            .title(e.minimalInfo())
+                            .icon(BitmapDescriptorFactory.fromResource(colourManager.GetMarkerResourceIndex()))
+                    );
                 }
-
-
-
             }
         });
 

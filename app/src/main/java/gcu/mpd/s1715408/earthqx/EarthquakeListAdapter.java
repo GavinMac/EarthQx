@@ -12,6 +12,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
+
+/**
+ * Custom list adapter for the earthquake ListView
+ */
 public class EarthquakeListAdapter extends ArrayAdapter<Earthquake> {
 
     private static final String TAG = "EarthquakeListAdapter";
@@ -65,22 +69,9 @@ public class EarthquakeListAdapter extends ArrayAdapter<Earthquake> {
         holder.magnitude.setText(magnitude);
 
 
-        float mag = Float.parseFloat(magnitude);
-        if(mag >=3){
-            holder.magnitude.setTextColor(Color.parseColor("#FF0000"));
-        }
-        else if(mag >=2){
-            holder.magnitude.setTextColor(Color.parseColor("#FF9800"));
-        }
-        else if (mag >=1){
-            holder.magnitude.setTextColor(Color.parseColor("#FFEB3B"));
-        }
-        else if(mag <0){
-            holder.magnitude.setTextColor(Color.GRAY);
-        }
-        else{
-            holder.magnitude.setTextColor(Color.BLACK);
-        }
+        ColourManager colourManager = new ColourManager(Double.parseDouble(magnitude));
+
+        holder.magnitude.setTextColor(Color.parseColor(colourManager.GetMagColour()));
 
         return convertView;
 

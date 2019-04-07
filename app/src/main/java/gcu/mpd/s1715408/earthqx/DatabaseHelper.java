@@ -1,3 +1,9 @@
+////////////////////////////////////////
+// Name                 Gavin Macleod //
+// Student ID           S1715408      //
+// Programme of Study   BSc Computing //
+////////////////////////////////////////
+
 package gcu.mpd.s1715408.earthqx;
 
 import android.content.ContentValues;
@@ -7,14 +13,16 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
+/**
+ * Sets up the database and all CRUD methods for it.
+ * A database was used in this project to meet the requirement of being able to index objects in a data structure
+ */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseHelper";
@@ -62,6 +70,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    /**
+     * Adds data to the database based on an earthquake that is passed in
+     * @param e Earthquake object
+     * @return boolean true or false if success or failure inserting data
+     */
     public boolean addData(Earthquake e) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -94,6 +107,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * Gets all rows from the SQLite database from a query then sends to QueryReturnList to build a list of earthquake objects
+     * @return List of earthquakes built from QueryReturnList()
+     */
     public List<Earthquake> getData() {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -101,6 +118,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return QueryReturnList(data);
     }
 
+    /**
+     * Gets all rows that match an input date from the SQLite database
+     * @return List of earthquakes built from QueryReturnList()
+     */
     public List<Earthquake> getListByDate(LocalDate dateInput) {
 
         Log.e("dateInput",""+dateInput);
@@ -112,10 +133,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return QueryReturnList(data);
     }
 
+    /**
+     * Gets the deepest earthquake in a given earthquake list from the SQLite database
+     * @return List of earthquakes built from QueryReturnList()
+     */
     public List<Earthquake> getDeepestQuake(List<Earthquake> earthquakeList) {
 
         List<Integer> depths = new ArrayList<>();
-        String earthquakeId = earthquakeList.get(0).getId();
+        int earthquakeIndex = -1;
 
         for (Earthquake e : earthquakeList) {
             String depthString = e.getDepth().replaceAll("[^0-9]", "");
@@ -123,12 +148,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         int max = Collections.max(depths);
 
-        for(Earthquake e : earthquakeList){
-            String depthString = e.getDepth().replaceAll("[^0-9]", "");
-            if(Integer.parseInt(depthString) == max){
-                earthquakeId = e.getId();
+        for(int i = 0; i < earthquakeList.size(); i++){
+            String depthString = earthquakeList.get(i).getDepth().replaceAll("[^0-9]", "");
+            double eDepth = Double.parseDouble(depthString);
+            if(eDepth == max){
+                earthquakeIndex = i;
             }
         }
+        String earthquakeId = earthquakeList.get(earthquakeIndex).getId();
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ID_COL + " = " + earthquakeId, null);
@@ -136,10 +163,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return QueryReturnList(data);
     }
 
+    /**
+     * Gets the largest magnitude earthquake in a given earthquake list from the SQLite database
+     * @return List of earthquakes built from QueryReturnList()
+     */
     public List<Earthquake> getHighestMagnitude(List<Earthquake> earthquakeList) {
 
         List<Double> mags = new ArrayList<>();
-        String earthquakeId = earthquakeList.get(0).getId();
+        int earthquakeIndex = -1;
 
         for (Earthquake e : earthquakeList) {
             String magString = e.getMagnitude();
@@ -147,11 +178,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         double max = Collections.max(mags);
 
-        for(Earthquake e : earthquakeList){
-            if(Float.parseFloat(e.getMagnitude()) == max){
-                earthquakeId = e.getId();
+        for(int i = 0; i < earthquakeList.size(); i++){
+            double eMag = Double.parseDouble(earthquakeList.get(i).getMagnitude());
+            if(eMag == max){
+                 earthquakeIndex = i;
             }
         }
+        String earthquakeId = earthquakeList.get(earthquakeIndex).getId();
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ID_COL + " = " + earthquakeId,null);
@@ -159,6 +192,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return QueryReturnList(data);
     }
 
+    /**
+     * Gets the most northerly/southerly/easterly/westerly earthquake by Lat/Long
+     * in a given earthquake list from the SQLite database
+     * @return List of earthquakes built from QueryReturnList()
+     */
     public List<Earthquake>getFurthestCompassPoint(List<Earthquake> earthquakeList, String compassPoint){
 
         List<Double>coordinates = new ArrayList<>();
@@ -186,42 +224,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     if(lat == max){
                     earthquakeId = e.getId();
                     }
-                    //queryModifier = " WHERE geoLat = " + max + ";";
                     break;
 
                 case "south" :
                     if(lat == min){
                         earthquakeId = e.getId();
                     }
-                    //queryModifier = " WHERE geoLat = " + min + ";";
                     break;
 
                 case "east" :
                     if(lon == max){
                         earthquakeId = e.getId();
                     }
-                    //queryModifier = " WHERE geoLong = " + max + ";";
                     break;
 
                 case "west" :
                     if(lon == min){
                         earthquakeId = e.getId();
                     }
-                    //queryModifier = " WHERE geoLong = " + min + ";";
                     break;
             }
 
         }
 
-
-
         SQLiteDatabase db = this.getWritableDatabase();
-        //Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + queryModifier,null);
         Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ID_COL + " = '" + earthquakeId + "'",null);
 
         return QueryReturnList(data);
     }
 
+    /**
+     * Builds a list of earthquake objects from an input Cursor parameter
+     * @param data Cursor with SQL query results
+     * @return List of Earthquake objects
+     */
     private List<Earthquake> QueryReturnList(Cursor data) {
 
         List<Earthquake> returnList = new ArrayList<>();
@@ -265,6 +301,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return returnList;
     }
 
+    /**
+     * Deletes everything from the table (unused)
+     */
     public void DeleteTable() {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -273,13 +312,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+
+    /**
+     * Generates an ID for an earthquake to be inserted into the database
+     * @param earthquake Earthquake object
+     * @return String returnId - a generated ID from the Latitude/Longitude and timestamp of an earthquake
+     */
     private String GenerateId(Earthquake earthquake){
         String returnId;
         String timeStamp = earthquake.getEarthquakeDate().toString().replaceAll("[^0-9]", "");
         String latLong = (earthquake.getGeoLat() + earthquake.getGeoLong()).replaceAll("[^0-9]", "");
         returnId = timeStamp + latLong;
 
-        Log.e("Generated ID", returnId);
         return returnId;
     }
 

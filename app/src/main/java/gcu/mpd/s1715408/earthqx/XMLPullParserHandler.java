@@ -1,3 +1,9 @@
+////////////////////////////////////////
+// Name                 Gavin Macleod //
+// Student ID           S1715408      //
+// Programme of Study   BSc Computing //
+////////////////////////////////////////
+
 package gcu.mpd.s1715408.earthqx;
 
 import android.util.Log;
@@ -17,6 +23,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Parsers the XML file given and returns it as a list
+ */
 public class XMLPullParserHandler {
 
     private List<Earthquake> earthquakeList;

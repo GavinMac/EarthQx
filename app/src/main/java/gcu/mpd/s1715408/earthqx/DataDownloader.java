@@ -22,29 +22,26 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Downloads the XML from the URL and runs an XMLPullParserHandler to insert all data into the database
+ */
 class DataDownloader implements Runnable {
 
     private DatabaseHelper mDatabaseHelper;
     public List<Earthquake> allEarthquakes;
-    private ListView listViewDisplay;
-    private GoogleMap mMap;
+    //private ListView listViewDisplay;
+    //private GoogleMap mMap;
     private String url = "http://quakes.bgs.ac.uk/feeds/MhSeismology.xml";
     private Context mainContext;
     private Handler threadHandler;
-    private TextView resultsTxtView;
-    private TextView dateTextView;
-    private LocalDate currentDate;
+    //private TextView resultsTxtView;
+    //private TextView dateTextView;
+    //private LocalDate currentDate;
 
-    public DataDownloader(Context context, DatabaseHelper dbHelper, Handler handler, List<Earthquake> eArrayList, ListView listView, GoogleMap googleMap, TextView resultsTextView, TextView dateTxtView, LocalDate currDate) {
+    public DataDownloader(Context context, DatabaseHelper dbHelper, Handler handler) {
         this.mainContext = context;
         this.mDatabaseHelper = dbHelper;
         this.threadHandler = handler;
-        this.allEarthquakes = eArrayList;
-        this.listViewDisplay = listView;
-        this.mMap = googleMap;
-        this.resultsTxtView = resultsTextView;
-        this.dateTextView = dateTxtView;
-        this.currentDate = currDate;
     }
 
     //Download XML from link and call the XML parser
@@ -70,16 +67,16 @@ class DataDownloader implements Runnable {
             Log.e("MyTag", "ioexception");
             ae.printStackTrace();
         }
-
-        UIWriter uiWriter = new UIWriter(mainContext, threadHandler, allEarthquakes, mMap, listViewDisplay, resultsTxtView, dateTextView, currentDate);
-        uiWriter.run();
     }
 
     public List<Earthquake>GetEarthquakeList(){
         return allEarthquakes;
     }
 
-    //For database
+    /**
+     * Adds each parsed earthquake from a list into the database
+     * @param earthquakes List of Earthquake objects
+     */
     public void AddDataToDb(List<Earthquake> earthquakes){
 
         for(Earthquake e : earthquakes){
@@ -93,6 +90,7 @@ class DataDownloader implements Runnable {
         }
     }
 
+    //Displays a toast message
     private void toastMessage(String message){
 
         Handler handler = new Handler(Looper.getMainLooper());
