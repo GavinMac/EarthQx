@@ -88,7 +88,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingBottom="5dp">
 
                     <TextView
                         android:id="@+id/earthquakeMagnitudeTxt"
@@ -111,78 +112,110 @@
                         android:text="@string/zero" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/OriginDateTitle"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="32sp"
-                    android:textAlignment="center"
-                    android:paddingTop="10dp"
-                    android:text="@string/OriginDateTitle"/>
-                <TextView
-                    android:id="@+id/earthquakeOriginDateTxt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="32sp"
-                    android:textStyle="bold"
-                    android:textAlignment="center"
-                    android:paddingBottom="10dp"
-                    android:text="@string/zero"/>
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:id="@+id/OriginDateTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="32sp"
+                        android:textAlignment="center"
+                        android:paddingHorizontal="10dp"
+                        android:paddingTop="10dp"
+                        android:text="@string/OriginDateTitle"/>
+                    <TextView
+                        android:id="@+id/earthquakeOriginDateTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        android:textAlignment="center"
+                        android:paddingHorizontal="10dp"
+                        android:paddingBottom="10dp"
+                        android:text="@string/zero"/>
+
+                </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
                 <TextView
                     android:id="@+id/PublishDateTitle"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="32sp"
                     android:textAlignment="center"
+                    android:paddingHorizontal="10dp"
                     android:paddingTop="10dp"
                     android:text="@string/PublishDateTitle"/>
                 <TextView
                     android:id="@+id/earthquakePubDateTxt"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="32sp"
                     android:textStyle="bold"
                     android:textAlignment="center"
+                    android:paddingHorizontal="10dp"
                     android:paddingBottom="10dp"
                     android:text="@string/zero"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/CategoryTitle"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="32sp"
                     android:textAlignment="center"
+                    android:paddingHorizontal="10dp"
                     android:paddingTop="10dp"
                     android:text="@string/CategoryTitle"/>
                 <TextView
                     android:id="@+id/earthquakeCategoryTxt"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="32sp"
                     android:textStyle="bold"
                     android:textAlignment="center"
+                    android:paddingHorizontal="10dp"
                     android:paddingBottom="10dp"
                     android:text="@string/zero"/>
+            </LinearLayout>
 
-                <TextView
-                    android:id="@+id/LinkTitle"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="32sp"
-                    android:textAlignment="center"
-                    android:paddingTop="10dp"
-                    android:text="@string/LinkTitle"/>
-                <TextView
-                    android:id="@+id/earthquakeLinkTxt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textAlignment="center"
-                    android:paddingBottom="10dp"
-                    android:text="@string/zero"
-                    android:textIsSelectable="true"
-                    android:autoLink="web"/>
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp">
+                    <TextView
+                        android:id="@+id/LinkTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="32sp"
+                        android:textAlignment="center"
+                        android:paddingHorizontal="10dp"
+                        android:text="@string/LinkTitle"/>
+                    <TextView
+                        android:id="@+id/earthquakeLinkTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="24sp"
+                        android:textAlignment="center"
+                        android:paddingHorizontal="10dp"
+                        android:text="@string/zero"
+                        android:textIsSelectable="true"
+                        android:autoLink="web"/>
+                </LinearLayout>
+
+
             </LinearLayout>
 
         </ScrollView>

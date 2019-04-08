@@ -8,13 +8,7 @@ package gcu.mpd.s1715408.earthqx;
 import android.util.Log;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Earthquake POCO class

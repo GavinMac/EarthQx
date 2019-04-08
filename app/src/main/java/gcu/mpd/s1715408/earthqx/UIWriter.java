@@ -49,9 +49,7 @@ public class UIWriter implements Runnable {
     public void run() {
 
         final EarthquakeListAdapter listAdapter = new EarthquakeListAdapter(mainContext, R.layout.list_item, earthquakeList);
-
         Handler handler = new Handler(Looper.getMainLooper());
-
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -62,8 +60,8 @@ public class UIWriter implements Runnable {
 
                 //set camera to UK
                 LatLng ukLatLng = new LatLng(55.378052, -3.435973);
-                map.moveCamera(CameraUpdateFactory.newLatLng(ukLatLng));
-                map.animateCamera(CameraUpdateFactory.zoomTo(4.0f));
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(ukLatLng, 4.0f));
+                //map.animateCamera(CameraUpdateFactory.zoomTo(4.0f));
                 map.clear();
 
                 if(currentDateSelection == null){
@@ -84,6 +82,5 @@ public class UIWriter implements Runnable {
                 }
             }
         });
-
     }
 }

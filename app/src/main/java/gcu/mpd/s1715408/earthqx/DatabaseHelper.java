@@ -94,13 +94,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         try{
             long result = db.insert(TABLE_NAME, null, contentValues);
-
+            db.close();
             if (result == -1) {
                 return false;
             } else {
                 return true;
             }
         } catch(SQLiteConstraintException ex){
+            db.close();
             Log.e("SQLiteException", ""+ex);
             return false;
         }
@@ -127,7 +128,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.e("dateInput",""+dateInput);
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + PUB_DATE + " = " + "'" + dateInput + "'", null);
-
         //Log.e("Cursor", "" + data.getCount());
 
         return QueryReturnList(data);

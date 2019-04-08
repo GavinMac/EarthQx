@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,9 +35,13 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 
 /**
@@ -53,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List<Earthquake> mainEarthquakeList = new ArrayList<>();
     private List<Earthquake> dateFilteredEarthquakes = new ArrayList<>();
     private Handler mainHandler = new Handler();
-    private boolean userIsInteracting;
+    private Bundle savedState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mapFragment.setRetainInstance(true);
 
         //Updates the database every 30 seconds.
         //If there is an internet connection, it will drop the table if there is any data, then re-download the data.
@@ -128,10 +135,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.e("currentDateSelection", "" + currentDateSelection);
 
         dateFilteredEarthquakes = mDatabaseHelper.getListByDate(currentDateSelection);
+        if(dateFilteredEarthquakes.isEmpty()){
+            toastMessage("No results found on " + currentDateSelection);
+        }
+        else{
+            RunUIthread(dateFilteredEarthquakes);
+        }
         //Log.e("earthquakesByDate", ""+dateFilteredEarthquakes);
-
-        UIWriter uiWriter = new UIWriter(this, mainHandler, dateFilteredEarthquakes, mMap, listViewDisplay, resultCountTextView, dateTextView, currentDateSelection);
-        uiWriter.run();
     }
 
     //Use onMapReady to run the other functions to load markers
@@ -141,8 +151,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mDatabaseHelper = new DatabaseHelper(MainActivity.this);
         RunDataDownloader();
         mainEarthquakeList = mDatabaseHelper.getData();
-        UIWriter uiWriter = new UIWriter(this, mainHandler, mainEarthquakeList, mMap, listViewDisplay, resultCountTextView, dateTextView, currentDateSelection);
-        uiWriter.run();
+        RunUIthread(mainEarthquakeList);
     }
 
     @Override
@@ -202,10 +211,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     toastMessage("Unable to filter");
             }
 
+            RunUIthread(listToDisplay);
             //Log.e("listToDisplay", "" + listToDisplay);
-
-            UIWriter uiWriter = new UIWriter(this, mainHandler, listToDisplay, mMap, listViewDisplay, resultCountTextView, dateTextView, currentDateSelection);
-            uiWriter.run();
     }
 
     @Override
@@ -231,6 +238,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         new Thread(dataDownloader).start();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBundle("bundle", savedState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        savedInstanceState.getBundle("bundle");
+    }
+
     //Creates and displays a toast message
     private void toastMessage(String message) {
         final String msg = message;
@@ -240,6 +259,45 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast toast = Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
+            }
+        });
+    }
+
+    private void RunUIthread(List<Earthquake>earthquakeList){
+        final EarthquakeListAdapter listAdapter = new EarthquakeListAdapter(this, R.layout.list_item, earthquakeList);
+        final List<Earthquake> eList = earthquakeList;
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+
+                resultCountTextView.setText(Integer.toString(eList.size()));
+                //Log.d("UI thread", "I am the UI thread");
+                listViewDisplay.setAdapter(listAdapter);
+
+                //set camera to UK
+                LatLng ukLatLng = new LatLng(55.378052, -3.435973);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ukLatLng, 4.0f));
+                //map.animateCamera(CameraUpdateFactory.zoomTo(4.0f));
+                mMap.clear();
+
+                if(currentDateSelection == null){
+                    dateTextView.setText(R.string.dateEditText);
+                }
+
+                for (Earthquake e : eList) {
+
+                    ColourManager colourManager = new ColourManager(Double.parseDouble(e.getMagnitude()));
+
+                    double latDouble = Double.parseDouble(e.getGeoLat());
+                    double longDouble = Double.parseDouble(e.getGeoLong());
+                    LatLng currentLatLng = new LatLng(latDouble, longDouble);
+                    mMap.addMarker(new MarkerOptions().position(currentLatLng)
+                            .title(e.minimalInfo())
+                            .icon(BitmapDescriptorFactory.fromResource(colourManager.GetMarkerResourceIndex()))
+                    );
+                }
             }
         });
     }
