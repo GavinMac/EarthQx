@@ -1,3 +1,9 @@
+////////////////////////////////////////
+// Name                 Gavin Macleod //
+// Student ID           S1715408      //
+// Programme of Study   BSc Computing //
+////////////////////////////////////////
+
 package gcu.mpd.s1715408.earthqx;
 
 import android.content.Context;

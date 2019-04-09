@@ -6,7 +6,6 @@
 package gcu.mpd.s1715408.earthqx;
 
 import android.util.Log;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 

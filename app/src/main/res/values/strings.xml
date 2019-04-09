@@ -1,4 +1,5 @@
 <resources>
+    <!-- Gavin Macleod | S1715408 -->
     <string name="app_name">EarthQx</string>
     <string name="welcome">Welcome To EarthQx</string>
     <string name="getDataBtn">Refresh</string>

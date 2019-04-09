@@ -28,15 +28,10 @@ import java.util.List;
 class DataDownloader implements Runnable {
 
     public List<Earthquake> allEarthquakes;
-    //private ListView listViewDisplay;
-    //private GoogleMap mMap;
     private String url = "http://quakes.bgs.ac.uk/feeds/MhSeismology.xml";
     private Context mainContext;
     private DatabaseHelper dbHelper;
     private Handler threadHandler;
-    //private TextView resultsTxtView;
-    //private TextView dateTextView;
-    //private LocalDate currentDate;
 
     public DataDownloader(Context context, DatabaseHelper databaseHelper, Handler handler) {
         this.mainContext = context;
