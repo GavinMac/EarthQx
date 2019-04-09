@@ -27,21 +27,25 @@ import java.util.List;
  */
 class DataDownloader implements Runnable {
 
-    private DatabaseHelper mDatabaseHelper;
     public List<Earthquake> allEarthquakes;
     //private ListView listViewDisplay;
     //private GoogleMap mMap;
     private String url = "http://quakes.bgs.ac.uk/feeds/MhSeismology.xml";
     private Context mainContext;
+    private DatabaseHelper dbHelper;
     private Handler threadHandler;
     //private TextView resultsTxtView;
     //private TextView dateTextView;
     //private LocalDate currentDate;
 
-    public DataDownloader(Context context, DatabaseHelper dbHelper, Handler handler) {
+    public DataDownloader(Context context, DatabaseHelper databaseHelper, Handler handler) {
         this.mainContext = context;
-        this.mDatabaseHelper = dbHelper;
+        this.dbHelper = databaseHelper;
         this.threadHandler = handler;
+    }
+
+    public List<Earthquake>GetEarthquakeList(){
+        return allEarthquakes;
     }
 
     //Download XML from link and call the XML parser
@@ -60,17 +64,13 @@ class DataDownloader implements Runnable {
             XMLPullParserHandler parser = new XMLPullParserHandler();
 
             allEarthquakes = parser.parse(yc.getInputStream());
-            //Log.e("allEarthquakes",""+allEarthquakes);
+            Log.e("allEarthquakes",""+allEarthquakes.size());
             AddDataToDb(allEarthquakes);
 
         } catch (IOException ae) {
-            Log.e("MyTag", "ioexception");
+            Log.e("IO Exception", "ioexception");
             ae.printStackTrace();
         }
-    }
-
-    public List<Earthquake>GetEarthquakeList(){
-        return allEarthquakes;
     }
 
     /**
@@ -78,14 +78,11 @@ class DataDownloader implements Runnable {
      * @param earthquakes List of Earthquake objects
      */
     public void AddDataToDb(List<Earthquake> earthquakes){
-
+        dbHelper = new DatabaseHelper(mainContext);
         for(Earthquake e : earthquakes){
-            boolean insertData = mDatabaseHelper.addData(e);
-
+            boolean insertData = dbHelper.addData(e);
             if(insertData){
-                toastMessage("Data inserted successfully");
-            } else{
-                toastMessage("Failed to insert data to database");
+                toastMessage("Adding Earthquakes...");
             }
         }
     }

@@ -13,6 +13,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -49,7 +50,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener {
 
-    DatabaseHelper mDatabaseHelper;
+    private DatabaseHelper dbHelper;
     private TextView dateTextView;
     private TextView resultCountTextView;
     private ListView listViewDisplay;
@@ -92,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.filters, R.layout.filter_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterSpinner.setAdapter(spinnerAdapter);
-//        filterSpinner.setSelected(false);
-//        filterSpinner.setSelection(0, true);
+        filterSpinner.setSelection(0);
+        filterSpinner.setSelected(true);
         filterSpinner.setOnItemSelectedListener(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -107,9 +108,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         TimerTask timerTask = new TimerTask() {
             public void run() {
                 if(isNetworkAvailable()){
-                    mDatabaseHelper = new DatabaseHelper(MainActivity.this);
-                    if(mDatabaseHelper.getData() != null){
-                        mDatabaseHelper.DeleteTable();
+                    dbHelper = new DatabaseHelper(MainActivity.this);
+                    if(dbHelper.getData() != null){
+                        dbHelper.DeleteTable();
                     }
                     RunDataDownloader();
                     toastMessage("Data Updated");
@@ -133,8 +134,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d/M/yyyy");
         currentDateSelection = LocalDate.parse(stringDate, dtf);
         Log.e("currentDateSelection", "" + currentDateSelection);
+        dbHelper = new DatabaseHelper(MainActivity.this);
 
-        dateFilteredEarthquakes = mDatabaseHelper.getListByDate(currentDateSelection);
+        dateFilteredEarthquakes = dbHelper.getListByDate(currentDateSelection);
         if(dateFilteredEarthquakes.isEmpty()){
             toastMessage("No results found on " + currentDateSelection);
         }
@@ -148,17 +150,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mDatabaseHelper = new DatabaseHelper(MainActivity.this);
         RunDataDownloader();
-        mainEarthquakeList = mDatabaseHelper.getData();
+        dbHelper = new DatabaseHelper(MainActivity.this);
+        mainEarthquakeList = dbHelper.getData();
+        //Log.e("mainEqList", ""+mainEarthquakeList.size());
         RunUIthread(mainEarthquakeList);
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             String text = parent.getItemAtPosition(position).toString();
-            toastMessage("Filtered " + text);
-            DatabaseHelper dbHelper = new DatabaseHelper(MainActivity.this);
+            if(position > 0){
+                toastMessage("Filtered " + text);
+            }
+            dbHelper = new DatabaseHelper(MainActivity.this);
 
             List<Earthquake> listToInput;
             if (currentDateSelection != null) {
@@ -219,23 +224,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onNothingSelected(AdapterView<?> parent) {
     }
 
-    /**
-     * Checks if network is available
-     * @return boolean
-     */
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
 
     /**
-     * Runs the data downloader
+     * Runs the DataDownloader class and adds data to db
      */
     private void RunDataDownloader(){
-        DataDownloader dataDownloader = new DataDownloader(MainActivity.this, mDatabaseHelper, mainHandler);
-        new Thread(dataDownloader).start();
+
+        if(isNetworkAvailable()){
+            DataDownloader dataDownloader = new DataDownloader(MainActivity.this, dbHelper, mainHandler);
+            new Thread(dataDownloader).start();
+        }
+        else{
+            toastMessage("No network available to download data");
+        }
+
+
     }
 
     @Override
@@ -248,6 +251,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         savedInstanceState.getBundle("bundle");
+    }
+
+    /**
+     * Checks if network is available
+     * @return boolean
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     //Creates and displays a toast message
@@ -279,7 +293,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 //set camera to UK
                 LatLng ukLatLng = new LatLng(55.378052, -3.435973);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ukLatLng, 4.0f));
-                //map.animateCamera(CameraUpdateFactory.zoomTo(4.0f));
                 mMap.clear();
 
                 if(currentDateSelection == null){

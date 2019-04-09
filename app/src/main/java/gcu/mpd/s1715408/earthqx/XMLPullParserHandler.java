@@ -120,6 +120,7 @@ public class XMLPullParserHandler {
             e.printStackTrace();
         }
 
+        Log.e("parsedEarthquakeList",""+earthquakeList.size());
         return earthquakeList;
     }
 
