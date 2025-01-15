@@ -7,5 +7,3 @@ EarthQx is a small Android application that downloads XML data from the British 
 Contains British Geological Survey materials ©NERC 2019
 
 https://youtu.be/4RwV3mB6NAc
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/4RwV3mB6NAc?si=nrZX-d1DAuWSTjA0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
